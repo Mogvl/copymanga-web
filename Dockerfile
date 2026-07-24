@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/li
 WORKDIR /app
 COPY Cargo.toml Cargo.lock* ./
 COPY src/ ./src/
-COPY templates/ ./templates/
 
 RUN cargo build --release && \
     strip target/release/copymanga-web && \
