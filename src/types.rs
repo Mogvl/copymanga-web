@@ -58,6 +58,7 @@ pub struct GetComicRespData {
 pub struct ComicDetail {
     pub uuid: String,
     pub name: String,
+    #[serde(rename = "path_word")]
     pub path_word: String,
     pub author: Vec<AuthorInfo>,
     pub cover: String,
@@ -78,12 +79,14 @@ pub struct LabeledValue {
 #[serde(rename_all = "camelCase")]
 pub struct ThemeInfo {
     pub name: String,
+    #[serde(rename = "path_word")]
     pub path_word: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GroupInfo {
+    #[serde(rename = "path_word")]
     pub path_word: String,
     pub count: u32,
     pub name: String,
@@ -102,7 +105,9 @@ pub struct ChapterItem {
     pub ordered: i64,
     pub size: i64,
     pub name: String,
+    #[serde(rename = "comic_path_word")]
     pub comic_path_word: String,
+    #[serde(rename = "group_path_word")]
     pub group_path_word: String,
     pub datetime_created: String,
 }
@@ -119,7 +124,9 @@ pub struct GetChapterRespData {
 pub struct ChapterContent {
     pub uuid: String,
     pub name: String,
+    #[serde(rename = "comic_path_word")]
     pub comic_path_word: String,
+    #[serde(rename = "group_path_word")]
     pub group_path_word: String,
     pub contents: Vec<ContentUrl>,
     pub words: Vec<i64>,
