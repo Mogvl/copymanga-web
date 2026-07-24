@@ -376,7 +376,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
 <div class="nav">
 <a href="/">🔍 搜索</a>
 <a href="/downloaded">📂 已下载</a>
-<span id="taskLink" style="display:none"><a href="javascript:void(0)" onclick="showTasks()">⏳ 下载中</a></span>
+<span id="taskLink"><a href="javascript:void(0)" onclick="toggleTasks()">⏳ 下载中</a></span>
 </div>
 <form class="search-box" action="/search" method="GET">
 <input type="text" name="q" placeholder="输入漫画名称搜索..." required autofocus>
@@ -386,11 +386,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
 <div style="background:#fff;margin:60px auto;max-width:600px;padding:20px;border-radius:12px;max-height:70vh;overflow-y:auto">
 <h2 style="margin-bottom:15px">下载任务</h2>
 <div id="taskList"></div>
-<button onclick="document.getElementById('taskModal').style.display='none'" style="margin-top:15px;padding:8px 16px;background:#999;color:white;border:none;border-radius:6px;cursor:pointer">关闭</button>
+<button onclick="toggleTasks()" style="margin-top:15px;padding:8px 16px;background:#999;color:white;border:none;border-radius:6px;cursor:pointer">关闭</button>
 </div></div>
 <script>
+let taskInterval = null;
 async function showTasks() {
-    document.getElementById('taskModal').style.display = 'block';
     const r = await fetch('/api/tasks');
     const tasks = await r.json();
     const list = document.getElementById('taskList');
@@ -405,7 +405,17 @@ async function showTasks() {
         </div>`;
     }).join('');
 }
-setInterval(showTasks, 3000);
+function toggleTasks() {
+    const modal = document.getElementById('taskModal');
+    if (modal.style.display === 'block') {
+        modal.style.display = 'none';
+        if (taskInterval) { clearInterval(taskInterval); taskInterval = null; }
+    } else {
+        modal.style.display = 'block';
+        showTasks();
+        taskInterval = setInterval(showTasks, 3000);
+    }
+}
 </script>
 <div class="footer">
 <p>copymanga-web v0.1.0</p>
