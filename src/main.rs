@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, Query, State},
+    extract::{Query, State},
     http::StatusCode,
     response::{Html, IntoResponse, Json},
     routing::{get, post},
@@ -35,6 +35,11 @@ struct SearchQuery {
 }
 
 fn default_page() -> i64 { 1 }
+
+#[derive(Deserialize)]
+struct ComicQuery {
+    path: String,
+}
 
 #[derive(Deserialize)]
 struct DownloadReq {
@@ -83,8 +88,9 @@ async fn search(
 /// 漫画详情页
 async fn comic_detail(
     State(state): State<Arc<Mutex<AppState>>>,
-    Path(path_word): Path<String>,
+    Query(query): Query<ComicQuery>,
 ) -> Result<Html<String>, AppError> {
+    let path_word = &query.path;
     let state = state.lock().await;
 
     // 获取漫画信息
@@ -330,7 +336,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(index))
         .route("/search", get(search))
-        .route("/comic/{path_word}", get(comic_detail))
+        .route("/comic", get(comic_detail))
         .route("/api/download", post(start_download))
         .route("/api/tasks", get(get_tasks))
         .route("/downloaded", get(downloaded_list))
@@ -464,7 +470,7 @@ a { text-decoration: none; color: inherit; }
 {% else %}
 <div class="comic-list">
 {% for comic in comics %}
-<a href="/comic/{{ comic.path_word }}" class="comic-card">
+<a href="/comic?path={{ comic.path_word }}" class="comic-card">
 <img src="{{ comic.cover }}" alt="" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%22110%22><rect fill=%22%23eee%22 width=%2280%22 height=%22110%22/></svg>'">
 <div class="info">
 <div class="name">{{ comic.name }}</div>
