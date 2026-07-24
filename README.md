@@ -71,13 +71,19 @@ docker compose up -d
 | `PORT` | Web 服务端口 | `3000` |
 | `TOKEN` | 登录 Token（可选） | 空 |
 
+## 拉取镜像
+
+```bash
+docker pull ghcr.io/mogvl/copymanga-web:latest
+```
+
 ## docker-compose.yml 配置
 
 ```yaml
 version: '3.8'
 services:
   copymanga-web:
-    image: copymanga-web:latest
+    image: ghcr.io/mogvl/copymanga-web:latest
     container_name: copymanga-web
     ports:
       - "3000:3000"
