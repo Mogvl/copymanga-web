@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  copymanga-web:
+    # 方式一：从 GitHub 容器仓库拉取（推荐，无需本地构建）
+    # image: ghcr.io/你的GitHub用户名/copymanga-web:latest
+    #
+    # 方式二：本地构建（已下载源码且有 Docker 时）
+    build: .
+
+    container_name: copymanga-web
+    ports:
+      - "3000:3000"
+    environment:
+      # 下载目录（容器内路径）
+      - DOWNLOAD_DIR=/downloads
+      - PORT=3000
+      # 可选: 用登录后的 token 避免风控
+      # - TOKEN=你的token
+    volumes:
+      # !!! 重要: 把 /volume1/漫画 改成你绿联云上存漫画的路径 !!!
+      - /volume1/漫画:/downloads
+    restart: unless-stopped

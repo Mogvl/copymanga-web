@@ -1,0 +1,7 @@
+target/
+Dockerfile
+*.md
+build.sh
+.gitignore
+.dockerignore
+.git/
