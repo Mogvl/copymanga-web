@@ -3,11 +3,11 @@ use std::sync::Arc;
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    response::{Html, IntoResponse, Json, Redirect},
+    response::{Html, IntoResponse, Json},
     routing::{get, post},
     Router,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use tokio::sync::Mutex;
 use tower_http::cors::CorsLayer;
 
@@ -156,6 +156,9 @@ async fn start_download(
     let state = state.lock().await;
 
     let mut task_ids = Vec::new();
+    let comic_name = req.comic_name.clone();
+    let comic_path_word = req.comic_path_word.clone();
+    let group_path_word = req.group_path_word.clone();
 
     for chapter_uuid in &req.chapter_uuids {
         // 获取章节图片 URL
@@ -185,12 +188,15 @@ async fn start_download(
 
         // 后台执行下载
         let manager = state.manager.clone();
+        let id_clone = id.clone();
+        let cu = chapter_uuid.clone();
+        let cpw = req.comic_path_word.clone();
         tokio::spawn(async move {
             manager
                 .download_chapter(
-                    id.clone(),
-                    req.comic_path_word.clone(),
-                    chapter_uuid.clone(),
+                    id_clone,
+                    cpw,
+                    cu,
                     images,
                     chapter_dir,
                 )
@@ -240,9 +246,9 @@ async fn downloaded_list(
         }
     }
 
-    Ok(Html(render_template("downloaded", &serde_json::json!({
+    Html(render_template("downloaded", &serde_json::json!({
         "comics": comics
-    }))))
+    })))
 }
 
 fn count_subdirs(dir: &std::path::Path) -> usize {

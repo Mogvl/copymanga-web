@@ -2,11 +2,9 @@ use std::{
     collections::HashMap,
     path::{Path, PathBuf},
     sync::Arc,
-    time::Duration,
 };
 
 use chrono::Utc;
-use eyre::{eyre, Result};
 use tokio::sync::{Mutex, Semaphore};
 use tracing::{error, info};
 use uuid::Uuid;
@@ -91,8 +89,8 @@ impl DownloadManager {
     pub async fn download_chapter(
         self: Arc<Self>,
         id: String,
-        comic_path_word: String,
-        chapter_uuid: String,
+        _comic_path_word: String,
+        _chapter_uuid: String,
         image_urls: Vec<(String, i64)>,
         chapter_dir: PathBuf,
     ) {
