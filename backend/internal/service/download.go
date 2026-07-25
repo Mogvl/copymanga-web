@@ -183,7 +183,7 @@ func (dm *DownloadManager) GetTask(taskID string) *model.DownloadTask {
 
 // GetDownloadedComics 获取已下载漫画列表
 func (dm *DownloadManager) GetDownloadedComics() ([]model.DownloadedComic, error) {
-	var comics []model.DownloadedComic
+	comics := make([]model.DownloadedComic, 0)
 
 	entries, err := os.ReadDir(dm.downloadDir)
 	if err != nil {
