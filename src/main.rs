@@ -353,7 +353,7 @@ async fn main() {
 
 // ============ 内联 HTML 模板 ============
 
-const TEMPLATE_INDEX: &str = r#"<!DOCTYPE html><html lang="zh-CN"><head>
+const TEMPLATE_INDEX: &str = r##"<!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -402,7 +402,7 @@ function toggleTasks(){
 <div class="footer"><p>copymanga-web v0.1.0</p></div>
 </body></html>"#;
 
-const TEMPLATE_SEARCH: &str = r#"<!DOCTYPE html><html lang="zh-CN"><head>
+const TEMPLATE_SEARCH: &str = r##"<!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -471,7 +471,7 @@ function toggleTasks(){
 </script>
 </body></html>"#;
 
-const TEMPLATE_COMIC: &str = r#"<!DOCTYPE html><html lang="zh-CN"><head>
+const TEMPLATE_COMIC: &str = r##"<!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -563,7 +563,7 @@ function toggleTasks(){
 </script>
 </body></html>"#;
 
-const TEMPLATE_DOWNLOADED: &str = r#"<!DOCTYPE html><html lang="zh-CN"><head>
+const TEMPLATE_DOWNLOADED: &str = r##"<!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
