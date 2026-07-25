@@ -400,7 +400,7 @@ function toggleTasks(){
 }
 </script>
 <div class="footer"><p>copymanga-web v0.1.0</p></div>
-</body></html>"#;
+</body></html>"##;
 
 const TEMPLATE_SEARCH: &str = r##"<!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -469,7 +469,7 @@ function toggleTasks(){
   else{m.style.display='block';showTasks();taskInterval=setInterval(showTasks,3000)}
 }
 </script>
-</body></html>"#;
+</body></html>"##;
 
 const TEMPLATE_COMIC: &str = r##"<!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -561,7 +561,7 @@ function toggleTasks(){
   else{m.style.display='block';showTasks();taskInterval=setInterval(showTasks,3000)}
 }
 </script>
-</body></html>"#;
+</body></html>"##;
 
 const TEMPLATE_DOWNLOADED: &str = r##"<!DOCTYPE html><html lang="zh-CN"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -615,4 +615,4 @@ function toggleTasks(){
   else{m.style.display='block';showTasks();taskInterval=setInterval(showTasks,3000)}
 }
 </script>
-</body></html>"#;
+</body></html>"##;
