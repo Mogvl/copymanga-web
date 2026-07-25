@@ -62,13 +62,15 @@ export async function startDownload(
   comicName: string,
   comicPathWord: string,
   chapterUUID: string,
-  chapterTitle: string
+  chapterTitle: string,
+  imageFormat?: string
 ): Promise<string> {
   const { data } = await api.post('/download', {
     comic_name: comicName,
     comic_path_word: comicPathWord,
     chapter_uuid: chapterUUID,
-    chapter_title: chapterTitle
+    chapter_title: chapterTitle,
+    image_format: imageFormat || 'webp'
   })
   if (!data.success) {
     throw new Error(data.message || '创建下载任务失败')

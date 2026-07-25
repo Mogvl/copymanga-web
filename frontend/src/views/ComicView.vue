@@ -12,6 +12,7 @@ const loading = ref(true)
 const error = ref('')
 const selectedChapters = ref<Record<string, Set<string>>>({})
 const downloading = ref(false)
+const imageFormat = ref('webp')
 const toast = ref('')
 const toastTimeout = ref<number | null>(null)
 
@@ -84,7 +85,7 @@ async function downloadSelected(groupKey: string) {
     for (const chapterUUID of selected) {
       const chapter = chapters.value[groupKey].find(c => c.uuid === chapterUUID)
       if (chapter) {
-        await startDownload(comic.value.comic.name, comic.value.comic.path_word, chapterUUID, chapter.name)
+        await startDownload(comic.value.comic.name, comic.value.comic.path_word, chapterUUID, chapter.name, imageFormat.value)
       }
     }
     showToast(`已创建 ${selected.size} 个下载任务`)
@@ -208,6 +209,14 @@ onMounted(loadComic)
             >
               {{ downloading ? '下载中...' : `下载选中 (${getSelectedCount(groupKey as string)})` }}
             </button>
+            <span class="format-group">
+              <label class="format-radio" :class="{ active: imageFormat === 'webp' }">
+                <input type="radio" value="webp" v-model="imageFormat"> WebP
+              </label>
+              <label class="format-radio" :class="{ active: imageFormat === 'jpg' }">
+                <input type="radio" value="jpg" v-model="imageFormat"> JPG
+              </label>
+            </span>
           </div>
 
           <!-- 章节网格 -->
@@ -531,6 +540,17 @@ onMounted(loadComic)
   padding: 4px 12px;
   border-radius: 12px;
 }
+
+/* 图片格式选择 */
+.format-group {
+  display: flex; gap: 2px; background: var(--bg); border-radius: 6px; padding: 2px; margin-left: auto; border: 1px solid var(--divider);
+}
+.format-radio {
+  padding: 4px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; color: var(--text-hint); transition: all .2s;
+}
+.format-radio input { display: none; }
+.format-radio.active { background: var(--primary); color: #fff; }
+.format-radio:hover:not(.active) { color: var(--text-primary); }
 
 .brief-text {
   font-size: 14px;

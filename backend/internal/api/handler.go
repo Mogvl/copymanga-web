@@ -253,6 +253,7 @@ type DownloadRequest struct {
 	ComicPathWord string   `json:"comic_path_word" binding:"required"`
 	ChapterUUID   string   `json:"chapter_uuid" binding:"required"`
 	ChapterTitle  string   `json:"chapter_title"`
+	ImageFormat   string   `json:"image_format"`
 }
 
 // StartDownload 开始下载
@@ -283,6 +284,7 @@ func (h *Handler) StartDownload(c *gin.Context) {
 		req.ComicPathWord,
 		req.ChapterUUID,
 		req.ChapterTitle,
+		req.ImageFormat,
 		chapterResp.Chapter.Contents,
 	)
 
@@ -291,6 +293,7 @@ func (h *Handler) StartDownload(c *gin.Context) {
 		taskID,
 		req.ComicPathWord,
 		req.ChapterUUID,
+		req.ImageFormat,
 		chapterResp.Chapter.Contents,
 		chapterResp.Chapter.Words,
 	)

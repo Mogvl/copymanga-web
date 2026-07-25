@@ -40,7 +40,7 @@ func (dm *DownloadManager) GetDownloadDir() string {
 }
 
 // CreateTask 创建下载任务
-func (dm *DownloadManager) CreateTask(comicName, comicPathWord, chapterUUID, chapterTitle string, images []model.ContentURL) string {
+func (dm *DownloadManager) CreateTask(comicName, comicPathWord, chapterUUID, chapterTitle, imageFormat string, images []model.ContentURL) string {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
 
@@ -51,6 +51,7 @@ func (dm *DownloadManager) CreateTask(comicName, comicPathWord, chapterUUID, cha
 		ComicPathWord: comicPathWord,
 		ChapterUUID:   chapterUUID,
 		ChapterTitle:  chapterTitle,
+		ImageFormat:   imageFormat,
 		Status:        "pending",
 		Progress:      "等待中",
 		TotalPages:    len(images),
@@ -62,7 +63,7 @@ func (dm *DownloadManager) CreateTask(comicName, comicPathWord, chapterUUID, cha
 }
 
 // StartDownload 开始下载任务
-func (dm *DownloadManager) StartDownload(taskID, comicPathWord, chapterUUID string, images []model.ContentURL, words []int64) {
+func (dm *DownloadManager) StartDownload(taskID, comicPathWord, chapterUUID, imageFormat string, images []model.ContentURL, words []int64) {
 	dm.mu.Lock()
 	task, ok := dm.tasks[taskID]
 	if !ok {
@@ -98,7 +99,7 @@ func (dm *DownloadManager) StartDownload(taskID, comicPathWord, chapterUUID stri
 
 			// 确定文件扩展名
 			ext := ".jpg"
-			if len(words) > index && words[index] == int64(index) {
+			if imageFormat == "webp" {
 				ext = ".webp"
 			}
 

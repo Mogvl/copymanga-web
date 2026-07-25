@@ -134,6 +134,7 @@ type DownloadTask struct {
 	ComicPathWord   string `json:"comic_path_word"`
 	ChapterUUID     string `json:"chapter_uuid"`
 	ChapterTitle    string `json:"chapter_title"`
+	ImageFormat     string `json:"image_format"`
 	Status          string `json:"status"` // pending, downloading, completed, failed
 	Progress        string `json:"progress"`
 	TotalPages      int    `json:"total_pages"`
