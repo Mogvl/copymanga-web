@@ -80,6 +80,10 @@ impl CopyMangaClient {
         self.token = token.to_string();
     }
 
+    pub fn get_api_domain(&self) -> &str {
+        &self.api_domain
+    }
+
     pub async fn login(&self, username: &str, password: &str) -> Result<String> {
         const SALT: i32 = 1729;
         let password = general_purpose::STANDARD.encode(format!("{password}-{SALT}"));

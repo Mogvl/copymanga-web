@@ -64,7 +64,13 @@ async fn search(
     Query(q): Query<SearchQuery>,
 ) -> Result<Html<String>, AppError> {
     let state = state.lock().await;
-    let (results, total) = state.client.search(&q.q, q.page).await?;
+    let (results, total) = match state.client.search(&q.q, q.page).await {
+        Ok(r) => r,
+        Err(e) => {
+            tracing::error!("搜索API调用失败: {:?}", e);
+            return Err(AppError(e));
+        }
+    };
 
     let total_pages = (total as f64 / 20.0).ceil() as i64;
     let page = q.page;
@@ -262,6 +268,26 @@ async fn downloaded_list(
     })))
 }
 
+/// API连通性测试
+async fn ping_api(
+    State(state): State<Arc<Mutex<AppState>>>,
+) -> Json<serde_json::Value> {
+    let state = state.lock().await;
+    let domain = state.client.get_api_domain().to_string();
+    drop(state);
+    let result = reqwest::get(format!("https://{}/api/v3/health", domain)).await;
+    match result {
+        Ok(resp) => Json(serde_json::json!({
+            "status": resp.status().as_u16(),
+            "ok": resp.status().is_success(),
+        })),
+        Err(e) => Json(serde_json::json!({
+            "status": "error",
+            "error": format!("{}", e),
+        })),
+    }
+}
+
 fn count_subdirs(dir: &std::path::Path) -> usize {
     std::fs::read_dir(dir)
         .map(|e| e.filter(|e| e.as_ref().ok().map(|e| e.file_type().ok().map(|t| t.is_dir()).unwrap_or(false)).unwrap_or(false)).count())
@@ -344,6 +370,7 @@ async fn main() {
         .route("/comic", get(comic_detail))
         .route("/api/download", post(start_download))
         .route("/api/tasks", get(get_tasks))
+        .route("/api/ping", get(ping_api))
         .route("/downloaded", get(downloaded_list))
         .layer(CorsLayer::permissive())
         .with_state(state);
