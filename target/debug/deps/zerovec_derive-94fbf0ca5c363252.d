@@ -1,0 +1,10 @@
+C:\Users\a9797\copymanga-web\target\debug\deps\zerovec_derive-94fbf0ca5c363252.d: C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\lib.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\make_ule.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\make_varule.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\ule.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\utils.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\varule.rs
+
+C:\Users\a9797\copymanga-web\target\debug\deps\zerovec_derive-94fbf0ca5c363252.dll: C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\lib.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\make_ule.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\make_varule.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\ule.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\utils.rs C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\varule.rs
+
+C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\lib.rs:
+C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\make_ule.rs:
+C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\make_varule.rs:
+C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\ule.rs:
+C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\utils.rs:
+C:\Users\a9797\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\zerovec-derive-0.11.3\src\varule.rs:
