@@ -353,118 +353,85 @@ async fn main() {
 
 // ============ 内联 HTML 模板 ============
 
-const TEMPLATE_INDEX: &str = r#"<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ title }}</title>
+const TEMPLATE_INDEX: &str = r#"<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
-.header { text-align: center; padding: 30px 0; }
-.header h1 { font-size: 24px; margin-bottom: 10px; color: #e74c3c; }
-.search-box { display: flex; gap: 10px; max-width: 500px; margin: 0 auto; }
-.search-box input { flex: 1; padding: 12px 16px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
-.search-box button { padding: 12px 24px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; }
-.search-box button:hover { background: #c0392b; }
-.nav { display: flex; justify-content: center; gap: 20px; margin: 20px 0; }
-.nav a { color: #e74c3c; text-decoration: none; font-size: 14px; }
-.nav a:hover { text-decoration: underline; }
-.footer { text-align: center; color: #999; font-size: 12px; padding: 30px 0; }
-</style>
-</head>
-<body>
-<div class="header">
-<h1>📚 拷贝漫画下载器</h1>
-<p>搜索漫画并下载到本地</p>
-</div>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f5;color:#333;max-width:960px;margin:0 auto;padding:20px}
+.header{text-align:center;padding:30px 0}
+.header h1{font-size:24px;margin-bottom:10px;color:#e74c3c}
+.search-box{display:flex;gap:10px;max-width:500px;margin:20px auto}
+.search-box input{flex:1;padding:12px 16px;border:2px solid #ddd;border-radius:8px;font-size:16px}
+.search-box button{padding:12px 24px;background:#e74c3c;color:#fff;border:none;border-radius:8px;font-size:16px;cursor:pointer}
+.search-box button:hover{background:#c0392b}
+.nav{display:flex;justify-content:center;gap:20px;margin:20px 0}
+.nav a{color:#e74c3c;text-decoration:none;font-size:14px}
+.nav a:hover{text-decoration:underline}
+.footer{text-align:center;color:#999;font-size:12px;padding:30px 0}
+</style></head><body>
 <div class="nav">
 <a href="/">🔍 搜索</a>
 <a href="/downloaded">📂 已下载</a>
-<span id="taskLink"><a href="javascript:void(0)" onclick="toggleTasks()">⏳ 下载中</a></span>
+<a href="#" onclick="toggleTasks()">⏳ 下载中</a>
 </div>
+<div class="header"><h1>📚 拷贝漫画下载器</h1><p>搜索漫画并下载到本地</p></div>
 <form class="search-box" action="/search" method="GET">
-<input type="text" name="q" placeholder="输入漫画名称搜索..." required autofocus>
-<button type="submit">搜索</button>
+<input type="text" name="q" placeholder="输入漫画名称搜索..." required autofocus><button type="submit">搜索</button>
 </form>
 <div id="taskModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000">
 <div style="background:#fff;margin:60px auto;max-width:600px;padding:20px;border-radius:12px;max-height:70vh;overflow-y:auto">
-<h2 style="margin-bottom:15px">下载任务</h2>
-<div id="taskList"></div>
-<button onclick="toggleTasks()" style="margin-top:15px;padding:8px 16px;background:#999;color:white;border:none;border-radius:6px;cursor:pointer">关闭</button>
+<h2 style="margin-bottom:15px">下载任务</h2><div id="taskList"></div>
+<button onclick="toggleTasks()" style="margin-top:15px;padding:8px 16px;background:#999;color:#fff;border:none;border-radius:6px;cursor:pointer">关闭</button>
 </div></div>
 <script>
-let taskInterval = null;
-async function showTasks() {
-    const r = await fetch('/api/tasks');
-    const tasks = await r.json();
-    const list = document.getElementById('taskList');
-    if (tasks.length === 0) { list.innerHTML = '<p style="color:#999">暂无下载任务</p>'; return; }
-    list.innerHTML = tasks.map(t => {
-        const statusEmoji = {Pending:'⏳',Downloading:'⬇️',Completed:'✅',Failed:'❌',Paused:'⏸️'}[t.status] || '⏳';
-        return `<div style="padding:8px;border-bottom:1px solid #eee">
-            <div>${statusEmoji} <b>${t.comic_name}</b> - ${t.chapter_title}</div>
-            <div style="font-size:13px;color:#666;margin-top:4px">
-                进度: ${t.progress} | 状态: ${t.status}
-            </div>
-        </div>`;
-    }).join('');
+let taskInterval=null;
+async function showTasks(){
+  let r=await fetch('/api/tasks'),tasks=await r.json(),list=document.getElementById('taskList');
+  if(!tasks.length){list.innerHTML='<p style="color:#999">暂无下载任务</p>';return}
+  list.innerHTML=tasks.map(t=>{
+    let e={Pending:'⏳',Downloading:'⬇️',Completed:'✅',Failed:'❌',Paused:'⏸️'}[t.status]||'⏳';
+    return '<div style="padding:8px;border-bottom:1px solid #eee"><div>'+e+' <b>'+t.comic_name+'</b> - '+t.chapter_title+'</div><div style="font-size:13px;color:#666;margin-top:4px">进度: '+t.progress+' | 状态: '+t.status+'</div></div>'
+  }).join('')
 }
-function toggleTasks() {
-    const modal = document.getElementById('taskModal');
-    if (modal.style.display === 'block') {
-        modal.style.display = 'none';
-        if (taskInterval) { clearInterval(taskInterval); taskInterval = null; }
-    } else {
-        modal.style.display = 'block';
-        showTasks();
-        taskInterval = setInterval(showTasks, 3000);
-    }
+function toggleTasks(){
+  let m=document.getElementById('taskModal');
+  if(m.style.display==='block'){m.style.display='none';if(taskInterval){clearInterval(taskInterval);taskInterval=null}}
+  else{m.style.display='block';showTasks();taskInterval=setInterval(showTasks,3000)}
 }
 </script>
-<div class="footer">
-<p>copymanga-web v0.1.0</p>
-</div>
-</body>
-</html>"#;
+<div class="footer"><p>copymanga-web v0.1.0</p></div>
+</body></html>"#;
 
-const TEMPLATE_SEARCH: &str = r#"<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>搜索结果 - {{ keyword }}</title>
+const TEMPLATE_SEARCH: &str = r#"<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
-.header { text-align: center; padding: 20px 0; }
-.header h1 { font-size: 20px; }
-.search-box { display: flex; gap: 10px; max-width: 500px; margin: 20px auto; }
-.search-box input { flex: 1; padding: 10px 14px; border: 2px solid #ddd; border-radius: 8px; font-size: 15px; }
-.search-box button { padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer; }
-a { text-decoration: none; color: inherit; }
-.comic-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-.comic-card { background: #fff; border-radius: 12px; padding: 15px; display: flex; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform .15s; }
-.comic-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
-.comic-card img { width: 80px; height: 110px; object-fit: cover; border-radius: 6px; background: #eee; }
-.comic-card .info { flex: 1; }
-.comic-card .info .name { font-size: 16px; font-weight: 600; margin-bottom: 5px; color: #333; }
-.comic-card .info .author { font-size: 13px; color: #888; margin-bottom: 3px; }
-.comic-card .info .popular { font-size: 12px; color: #e74c3c; }
-.back { display: inline-block; margin: 15px 0; color: #e74c3c; text-decoration: none; }
-.back:hover { text-decoration: underline; }
-</style>
-</head>
-<body>
-<a class="back" href="/">← 返回搜索</a>
-<div class="search-box">
-<form action="/search" method="GET" style="display:flex;gap:10px;width:100%">
-<input type="text" name="q" value="{{ keyword }}" placeholder="输入漫画名称搜索...">
-<button type="submit">搜索</button>
-</form>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f5;color:#333;max-width:960px;margin:0 auto;padding:20px}
+.nav{display:flex;justify-content:center;gap:20px;margin:20px 0}
+.nav a{color:#e74c3c;text-decoration:none;font-size:14px}
+.nav a:hover{text-decoration:underline}
+.back{display:inline-block;margin:15px 0;color:#e74c3c;text-decoration:none}
+.back:hover{text-decoration:underline}
+.comic-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
+.comic-card{background:#fff;border-radius:12px;padding:15px;display:flex;gap:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08);transition:transform .15s}
+.comic-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.12)}
+.comic-card img{width:80px;height:110px;object-fit:cover;border-radius:6px;background:#eee}
+.comic-card .info{flex:1}
+.comic-card .info .name{font-size:16px;font-weight:600;margin-bottom:5px;color:#333}
+.comic-card .info .author{font-size:13px;color:#888;margin-bottom:3px}
+.comic-card .info .popular{font-size:12px;color:#e74c3c}
+</style></head><body>
+<div class="nav">
+<a href="/">🔍 搜索</a>
+<a href="/downloaded">📂 已下载</a>
+<a href="#" onclick="toggleTasks()">⏳ 下载中</a>
 </div>
+<a class="back" href="/">← 返回搜索</a>
 <h2 style="margin:15px 0">搜索结果: {{ keyword }}</h2>
+<form action="/search" method="GET" style="display:flex;gap:10px;max-width:500px;margin:10px 0">
+<input type="text" name="q" value="{{ keyword }}" placeholder="搜索..." style="flex:1;padding:10px;border:2px solid #ddd;border-radius:8px">
+<button type="submit" style="padding:10px 20px;background:#e74c3c;color:#fff;border:none;border-radius:8px;cursor:pointer">搜索</button>
+</form>
 {% if comics|length == 0 %}
 <p style="color:#999;text-align:center;padding:40px">没有找到相关漫画</p>
 {% else %}
@@ -481,130 +448,141 @@ a { text-decoration: none; color: inherit; }
 {% endfor %}
 </div>
 {% endif %}
-</body>
-</html>"#;
+<div id="taskModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000">
+<div style="background:#fff;margin:60px auto;max-width:600px;padding:20px;border-radius:12px;max-height:70vh;overflow-y:auto">
+<h2 style="margin-bottom:15px">下载任务</h2><div id="taskList"></div>
+<button onclick="toggleTasks()" style="margin-top:15px;padding:8px 16px;background:#999;color:#fff;border:none;border-radius:6px;cursor:pointer">关闭</button>
+</div></div>
+<script>
+let taskInterval=null;
+async function showTasks(){
+  let r=await fetch('/api/tasks'),tasks=await r.json(),list=document.getElementById('taskList');
+  if(!tasks.length){list.innerHTML='<p style="color:#999">暂无下载任务</p>';return}
+  list.innerHTML=tasks.map(t=>{
+    let e={Pending:'⏳',Downloading:'⬇️',Completed:'✅',Failed:'❌',Paused:'⏸️'}[t.status]||'⏳';
+    return '<div style="padding:8px;border-bottom:1px solid #eee"><div>'+e+' <b>'+t.comic_name+'</b> - '+t.chapter_title+'</div><div style="font-size:13px;color:#666;margin-top:4px">进度: '+t.progress+' | 状态: '+t.status+'</div></div>'
+  }).join('')
+}
+function toggleTasks(){
+  let m=document.getElementById('taskModal');
+  if(m.style.display==='block'){m.style.display='none';if(taskInterval){clearInterval(taskInterval);taskInterval=null}}
+  else{m.style.display='block';showTasks();taskInterval=setInterval(showTasks,3000)}
+}
+</script>
+</body></html>"#;
 
-const TEMPLATE_COMIC: &str = r#"<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ comic.name }} - 拷贝漫画下载</title>
+const TEMPLATE_COMIC: &str = r#"<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
-.back { display: inline-block; margin-bottom: 15px; color: #e74c3c; text-decoration: none; }
-.back:hover { text-decoration: underline; }
-.comic-header { display: flex; gap: 20px; background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.comic-header img { width: 160px; height: 220px; object-fit: cover; border-radius: 8px; background: #eee; }
-.comic-header .info { flex: 1; }
-.comic-header .info h1 { font-size: 22px; margin-bottom: 8px; }
-.comic-header .info .meta { color: #888; font-size: 14px; margin-bottom: 5px; }
-.comic-header .info .brief { color: #555; font-size: 14px; line-height: 1.6; margin-top: 10px; }
-.group-section { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.group-section h3 { font-size: 16px; color: #e74c3c; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #fde8e8; }
-.toolbar { margin-bottom: 12px; display: flex; gap: 10px; align-items: center; }
-.toolbar label { font-size: 14px; cursor: pointer; }
-.toolbar button { padding: 8px 20px; background: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
-.toolbar button:hover { background: #c0392b; }
-.toolbar button:disabled { background: #ccc; cursor: not-allowed; }
-.chapter-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
-.chapter-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: #fafafa; border-radius: 6px; border: 1px solid #eee; font-size: 14px; }
-.chapter-item:hover { background: #fef0ef; }
-.chapter-item input[type=checkbox] { cursor: pointer; }
-.chapter-item label { cursor: pointer; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chapter-item .size { font-size: 12px; color: #999; }
-.toast { position: fixed; top: 20px; right: 20px; background: #27ae60; color: white; padding: 12px 24px; border-radius: 8px; display: none; z-index: 999; }
-</style>
-</head>
-<body>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f5;color:#333;max-width:960px;margin:0 auto;padding:20px}
+.nav{display:flex;justify-content:center;gap:20px;margin:20px 0}
+.nav a{color:#e74c3c;text-decoration:none;font-size:14px}
+.nav a:hover{text-decoration:underline}
+.back{display:inline-block;margin-bottom:15px;color:#e74c3c;text-decoration:none}
+.back:hover{text-decoration:underline}
+.comic-header{display:flex;gap:20px;background:#fff;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.comic-header img{width:160px;height:220px;object-fit:cover;border-radius:8px;background:#eee}
+.comic-header .info{flex:1}
+.comic-header .info h1{font-size:22px;margin-bottom:8px}
+.comic-header .info .meta{color:#888;font-size:14px;margin-bottom:5px}
+.comic-header .info .brief{color:#555;font-size:14px;line-height:1.6;margin-top:10px}
+.group-section{background:#fff;border-radius:12px;padding:20px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.group-section h3{font-size:16px;color:#e74c3c;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #fde8e8}
+.toolbar{margin-bottom:12px;display:flex;gap:10px;align-items:center}
+.toolbar button{padding:8px 20px;background:#e74c3c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px}
+.chapter-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.chapter-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fafafa;border-radius:6px;border:1px solid #eee;font-size:14px}
+.chapter-item:hover{background:#fef0ef}
+.chapter-item input{cursor:pointer}
+.chapter-item label{cursor:pointer;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chapter-item .size{font-size:12px;color:#999}
+.toast{position:fixed;top:20px;right:20px;background:#27ae60;color:#fff;padding:12px 24px;border-radius:8px;display:none;z-index:999}
+</style></head><body>
+<div class="nav">
+<a href="/">🔍 搜索</a>
+<a href="/downloaded">📂 已下载</a>
+<a href="#" onclick="toggleTasks()">⏳ 下载中</a>
+</div>
 <div id="toast" class="toast"></div>
-<a class="back" href="javascript:history.back()">← 返回搜索结果</a>
+<a class="back" href="javascript:history.back()">← 返回</a>
 <div class="comic-header">
 <img src="{{ comic.cover }}" alt="" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%22220%22><rect fill=%22%23eee%22 width=%22160%22 height=%22220%22/></svg>'">
-<div class="info">
-<h1>{{ comic.name }}</h1>
+<div class="info"><h1>{{ comic.name }}</h1>
 <div class="meta">✍️ {{ comic.author }}</div>
 <div class="meta">📌 {{ comic.status }}</div>
-<div class="brief">{{ comic.brief }}</div>
-</div>
-</div>
+<div class="brief">{{ comic.brief }}</div></div></div>
 {% for group in chapters %}
 <div class="group-section">
 <h3>📖 {{ group.group_name }}</h3>
 <div class="toolbar">
-<label><input type="checkbox" onchange="toggleGroup(this, '{{ group.group_path_word }}')"> 全选本组</label>
-<button onclick="downloadSelected('{{ comic.name }}', '{{ comic.path_word }}', '{{ group.group_path_word }}')" id="dlBtn{{ loop.index }}">下载选中章节</button>
+<label><input type="checkbox" onchange="toggleGroup(this,'{{ group.group_path_word }}')"> 全选本组</label>
+<button onclick="downloadSelected('{{ comic.name }}','{{ comic.path_word }}','{{ group.group_path_word }}')">下载选中章节</button>
 </div>
 <div class="chapter-list" id="group-{{ group.group_path_word }}">
 {% for chapter in group.chapters %}
 <div class="chapter-item">
-<input type="checkbox" class="chk-{{ group.group_path_word }}" value="{{ chapter.uuid }}" data-title="{{ chapter.title }}" data-idx="{{ loop.index }}">
-<label onclick="this.previousElementSibling.click()">
-第{{ chapter.order }}话 {{ chapter.title }}
-</label>
+<input type="checkbox" class="chk-{{ group.group_path_word }}" value="{{ chapter.uuid }}">
+<label onclick="this.previousElementSibling.click()">第{{ chapter.order }}话 {{ chapter.title }}</label>
 <span class="size">{{ chapter.count }}页</span>
 </div>
-{% endfor %}
-</div>
-</div>
+{% endfor %}</div></div>
 {% endfor %}
 <script>
-function toggleGroup(el, gid) {
-    document.querySelectorAll('.chk-' + gid).forEach(c => c.checked = el.checked);
-}
-function toast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.style.display = 'block';
-    setTimeout(() => t.style.display = 'none', 3000);
-}
-async function downloadSelected(comicName, pathWord, groupPw) {
-    const checks = document.querySelectorAll('.chk-' + groupPw + ':checked');
-    if (checks.length === 0) { toast('请先选择要下载的章节'); return; }
-    const uuids = Array.from(checks).map(c => c.value);
-    try {
-        const r = await fetch('/api/download', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                comic_name: comicName,
-                comic_path_word: pathWord,
-                group_path_word: groupPw,
-                chapter_uuids: uuids
-            })
-        });
-        const data = await r.json();
-        toast(data.message || '下载任务已创建');
-    } catch(e) { toast('创建下载任务失败: ' + e); }
+function toggleGroup(el,gid){document.querySelectorAll('.chk-'+gid).forEach(c=>c.checked=el.checked)}
+function toast(m){let t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
+async function downloadSelected(n,pw,gpw){
+  let c=document.querySelectorAll('.chk-'+gpw+':checked');
+  if(!c.length){toast('请先选择要下载的章节');return}
+  try{
+    let r=await fetch('/api/download',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({comic_name:n,comic_path_word:pw,group_path_word:gpw,chapter_uuids:Array.from(c).map(x=>x.value)})});
+    let d=await r.json();toast(d.message||'下载任务已创建')
+  }catch(e){toast('创建下载任务失败: '+e)}
 }
 </script>
-</body>
-</html>"#;
+<div id="taskModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000">
+<div style="background:#fff;margin:60px auto;max-width:600px;padding:20px;border-radius:12px;max-height:70vh;overflow-y:auto">
+<h2 style="margin-bottom:15px">下载任务</h2><div id="taskList"></div>
+<button onclick="toggleTasks()" style="margin-top:15px;padding:8px 16px;background:#999;color:#fff;border:none;border-radius:6px;cursor:pointer">关闭</button>
+</div></div>
+<script>
+let taskInterval=null;
+async function showTasks(){
+  let r=await fetch('/api/tasks'),tasks=await r.json(),list=document.getElementById('taskList');
+  if(!tasks.length){list.innerHTML='<p style="color:#999">暂无下载任务</p>';return}
+  list.innerHTML=tasks.map(t=>{
+    let e={Pending:'⏳',Downloading:'⬇️',Completed:'✅',Failed:'❌',Paused:'⏸️'}[t.status]||'⏳';
+    return '<div style="padding:8px;border-bottom:1px solid #eee"><div>'+e+' <b>'+t.comic_name+'</b> - '+t.chapter_title+'</div><div style="font-size:13px;color:#666;margin-top:4px">进度: '+t.progress+' | 状态: '+t.status+'</div></div>'
+  }).join('')
+}
+function toggleTasks(){
+  let m=document.getElementById('taskModal');
+  if(m.style.display==='block'){m.style.display='none';if(taskInterval){clearInterval(taskInterval);taskInterval=null}}
+  else{m.style.display='block';showTasks();taskInterval=setInterval(showTasks,3000)}
+}
+</script>
+</body></html>"#;
 
-const TEMPLATE_DOWNLOADED: &str = r#"<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>已下载 - 拷贝漫画下载器</title>
+const TEMPLATE_DOWNLOADED: &str = r#"<!DOCTYPE html><html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f5f5; color: #333; max-width: 960px; margin: 0 auto; padding: 20px; }
-.header { padding: 20px 0; }
-.header h1 { font-size: 22px; }
-.header a { color: #e74c3c; text-decoration: none; font-size: 14px; }
-.comic-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
-.comic-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-.comic-card .name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
-.comic-card .stat { font-size: 13px; color: #888; }
-.empty { text-align: center; padding: 60px; color: #999; }
-</style>
-</head>
-<body>
-<div class="header">
-<a href="/">← 返回搜索</a>
-<h1>📂 已下载的漫画</h1>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f5f5;color:#333;max-width:960px;margin:0 auto;padding:20px}
+.nav{display:flex;justify-content:center;gap:20px;margin:20px 0}
+.nav a{color:#e74c3c;text-decoration:none;font-size:14px}
+.nav a:hover{text-decoration:underline}
+.comic-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:15px}
+.comic-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.comic-card .name{font-size:16px;font-weight:600;margin-bottom:8px}
+.comic-card .stat{font-size:13px;color:#888}
+.empty{text-align:center;padding:60px;color:#999}
+</style></head><body>
+<div class="nav">
+<a href="/">🔍 搜索</a>
+<a href="/downloaded">📂 已下载</a>
+<a href="#" onclick="toggleTasks()">⏳ 下载中</a>
 </div>
+<h2>📂 已下载的漫画</h2>
 {% if comics|length == 0 %}
 <div class="empty">还没有下载任何漫画</div>
 {% else %}
@@ -614,8 +592,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-
 <div class="name">{{ comic.name }}</div>
 <div class="stat">📖 {{ comic.chapter_count }} 个章节 | 🖼️ {{ comic.total_pages }} 张图片</div>
 </div>
-{% endfor %}
-</div>
+{% endfor %}</div>
 {% endif %}
-</body>
-</html>"#;
+<div id="taskModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000">
+<div style="background:#fff;margin:60px auto;max-width:600px;padding:20px;border-radius:12px;max-height:70vh;overflow-y:auto">
+<h2 style="margin-bottom:15px">下载任务</h2><div id="taskList"></div>
+<button onclick="toggleTasks()" style="margin-top:15px;padding:8px 16px;background:#999;color:#fff;border:none;border-radius:6px;cursor:pointer">关闭</button>
+</div></div>
+<script>
+let taskInterval=null;
+async function showTasks(){
+  let r=await fetch('/api/tasks'),tasks=await r.json(),list=document.getElementById('taskList');
+  if(!tasks.length){list.innerHTML='<p style="color:#999">暂无下载任务</p>';return}
+  list.innerHTML=tasks.map(t=>{
+    let e={Pending:'⏳',Downloading:'⬇️',Completed:'✅',Failed:'❌',Paused:'⏸️'}[t.status]||'⏳';
+    return '<div style="padding:8px;border-bottom:1px solid #eee"><div>'+e+' <b>'+t.comic_name+'</b> - '+t.chapter_title+'</div><div style="font-size:13px;color:#666;margin-top:4px">进度: '+t.progress+' | 状态: '+t.status+'</div></div>'
+  }).join('')
+}
+function toggleTasks(){
+  let m=document.getElementById('taskModal');
+  if(m.style.display==='block'){m.style.display='none';if(taskInterval){clearInterval(taskInterval);taskInterval=null}}
+  else{m.style.display='block';showTasks();taskInterval=setInterval(showTasks,3000)}
+}
+</script>
+</body></html>"#;
