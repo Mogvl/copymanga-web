@@ -3,14 +3,16 @@ use std::time::Duration;
 use base64::{engine::general_purpose, Engine as _};
 use eyre::{eyre, Result};
 use reqwest::Client;
+use reqwest_middleware::ClientWithMiddleware;
+use reqwest_retry::{policies::ExponentialBackoff, Jitter, RetryTransientMiddleware};
 use serde_json::json;
 
 use crate::types::*;
 
 /// 拷贝漫画 API 客户端
 pub struct CopyMangaClient {
-    api_client: Client,
-    img_client: Client,
+    api_client: ClientWithMiddleware,
+    img_client: ClientWithMiddleware,
     api_domain: String,
     token: String,
 }
@@ -25,16 +27,31 @@ impl CopyMangaClient {
         headers.insert("webp", "1".parse().unwrap());
         headers.insert("region", "1".parse().unwrap());
 
-        let api_client = Client::builder()
+        let retry_policy = ExponentialBackoff::builder()
+            .base(1)
+            .jitter(Jitter::Bounded)
+            .build_with_total_retry_duration(Duration::from_secs(5));
+
+        let api_client = reqwest::Client::builder()
             .default_headers(headers)
             .timeout(Duration::from_secs(10))
             .build()
             .expect("创建 HTTP 客户端失败");
 
-        let img_client = Client::builder()
+        let api_client = reqwest_middleware::ClientBuilder::new(api_client)
+            .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+            .build();
+
+        let img_client = reqwest::Client::builder()
             .timeout(Duration::from_secs(30))
             .build()
             .expect("创建图片下载客户端失败");
+
+        let img_client = reqwest_middleware::ClientBuilder::new(img_client)
+            .with(RetryTransientMiddleware::new_with_policy(
+                ExponentialBackoff::builder().build_with_max_retries(3),
+            ))
+            .build();
 
         Self {
             api_client,
