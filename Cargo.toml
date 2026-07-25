@@ -11,7 +11,7 @@ tokio = { version = "1", features = ["full"] }
 tower-http = { version = "0.5", features = ["cors", "fs"] }
 
 # HTTP client
-reqwest = { version = "0.12", features = ["json", "native-tls", "gzip"] }
+reqwest = { version = "0.12", features = ["json", "gzip"] }
 
 # Serialization
 serde = { version = "1", features = ["derive"] }
