@@ -107,23 +107,22 @@ impl CopyMangaClient {
 
     pub async fn search(&self, keyword: &str, page: i64) -> Result<(Vec<ComicInSearch>, i64)> {
         let offset = (page - 1) * 20;
-        let url = format!(
-            "https://{}/api/v3/search/comic?limit=20&offset={}&q={}&q_type=&platform=1",
-            self.api_domain, offset, keyword
-        );
         let client = Client::builder()
             .timeout(Duration::from_secs(15))
             .build()?;
-        let body = client.get(&url)
+        let resp: CopyResp = client
+            .get(format!("https://{}/api/v3/search/comic", self.api_domain))
+            .query(&json!({"limit": 20, "offset": offset, "q": keyword, "q_type": "", "platform": 1}))
             .header("User-Agent", "COPY/3.0.0")
-            .send().await?
-            .text().await?;
-        let copy_resp: CopyResp = serde_json::from_str(&body)?;
+            .send()
+            .await?
+            .json()
+            .await?;
 
-        if copy_resp.code != 200 {
-            return Err(eyre!("搜索失败: {}", copy_resp.message));
+        if resp.code != 200 {
+            return Err(eyre!("搜索失败: {}", resp.message));
         }
-        let list: SearchRespData = serde_json::from_value(copy_resp.results)?;
+        let list: SearchRespData = serde_json::from_value(resp.results)?;
         let total = list.0.total;
         Ok((list.0.list, total))
     }
