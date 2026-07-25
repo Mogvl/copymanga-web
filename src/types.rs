@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 /// 拷贝漫画 API 通用响应结构
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct CopyResp {
     pub code: i64,
     pub message: String,
@@ -22,11 +21,9 @@ pub struct Pagination<T> {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ComicInSearch {
     pub name: String,
     pub alias: Option<String>,
-    #[serde(rename = "path_word")]
     pub path_word: String,
     pub cover: String,
     pub ban: i64,
@@ -35,17 +32,14 @@ pub struct ComicInSearch {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct AuthorInfo {
     pub name: String,
     pub alias: Option<String>,
-    #[serde(rename = "path_word")]
     pub path_word: String,
 }
 
 /// 漫画详情响应
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct GetComicRespData {
     pub is_banned: bool,
     pub comic: ComicDetail,
@@ -54,11 +48,9 @@ pub struct GetComicRespData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ComicDetail {
     pub uuid: String,
     pub name: String,
-    #[serde(rename = "path_word")]
     pub path_word: String,
     pub author: Vec<AuthorInfo>,
     pub cover: String,
@@ -69,24 +61,19 @@ pub struct ComicDetail {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct LabeledValue {
     pub value: i64,
     pub display: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ThemeInfo {
     pub name: String,
-    #[serde(rename = "path_word")]
     pub path_word: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct GroupInfo {
-    #[serde(rename = "path_word")]
     pub path_word: String,
     pub count: u32,
     pub name: String,
@@ -97,7 +84,6 @@ pub struct GroupInfo {
 pub struct GetChaptersRespData(pub Pagination<ChapterItem>);
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ChapterItem {
     pub index: i64,
     pub uuid: String,
@@ -105,40 +91,33 @@ pub struct ChapterItem {
     pub ordered: i64,
     pub size: i64,
     pub name: String,
-    #[serde(rename = "comic_path_word")]
     pub comic_path_word: String,
-    #[serde(rename = "group_path_word")]
     pub group_path_word: String,
     pub datetime_created: String,
 }
 
 /// 单个章节详情（含图片 URL）
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct GetChapterRespData {
     pub chapter: ChapterContent,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ChapterContent {
     pub uuid: String,
     pub name: String,
-    #[serde(rename = "comic_path_word")]
     pub comic_path_word: String,
-    #[serde(rename = "group_path_word")]
     pub group_path_word: String,
     pub contents: Vec<ContentUrl>,
     pub words: Vec<i64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
 pub struct ContentUrl {
     pub url: String,
 }
 
-// ============ 前端展示用类型 ============
+// ============ 前端展示用类型（不会直接反序列化 API 响应）============
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ComicInfo {
@@ -193,7 +172,7 @@ pub struct DownloadTask {
     pub chapter_uuid: String,
     pub comic_path_word: String,
     pub status: TaskStatus,
-    pub progress: String,  // "3/20"
+    pub progress: String,
     pub total_pages: u32,
     pub downloaded_pages: u32,
     pub created_at: String,
