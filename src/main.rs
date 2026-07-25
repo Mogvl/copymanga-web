@@ -275,12 +275,22 @@ async fn ping_api(
     let state = state.lock().await;
     let domain = state.client.get_api_domain().to_string();
     drop(state);
-    let url = format!("https://{}/api/v3/search/comic?limit=1&offset=0&q=test&q_type=&platform=1", domain);
-    let result = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(10))
-        .build().unwrap()
-        .get(&url)
-        .header("User-Agent", "COPY/3.0.0")
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(15))
+        .default_headers({
+            let mut h = reqwest::header::HeaderMap::new();
+            h.insert("User-Agent", "COPY/3.0.0".parse().unwrap());
+            h.insert("Accept", "application/json".parse().unwrap());
+            h.insert("version", "2025.08.15".parse().unwrap());
+            h.insert("platform", "1".parse().unwrap());
+            h.insert("webp", "1".parse().unwrap());
+            h.insert("region", "1".parse().unwrap());
+            h
+        })
+        .build().unwrap();
+    let result = client
+        .get(format!("https://{}/api/v3/search/comic", domain))
+        .query(&serde_json::json!({"limit": 5, "offset": 0, "q": "随变", "q_type": "", "platform": 1}))
         .send().await;
     match result {
         Ok(resp) => {
