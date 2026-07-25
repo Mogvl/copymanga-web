@@ -58,7 +58,7 @@ docker compose up -d
 
 ### 3. 使用
 
-1. 浏览器打开 `http://绿联云IP:8080`
+1. 浏览器打开 `http://绿联云IP:3000`
 2. 搜索漫画
 3. 选择章节 → 下载
 4. 在绿联云文件管理器里查看下载的漫画
@@ -69,7 +69,8 @@ docker compose up -d
 |------|------|--------|
 | `DOWNLOAD_DIR` | 漫画下载目录 | `/downloads` |
 | `STATIC_DIR` | 前端静态文件目录 | `/app/static` |
-| `PORT` | Web 服务端口 | `8080` |
+| `PORT` | Web 服务端口（容器内） | `8080` |
+| `STATIC_DIR` | 静态文件目录 | `/app/static` |
 
 ## 拉取镜像
 
@@ -86,7 +87,7 @@ services:
     image: ghcr.io/mogvl/copymanga-web:latest
     container_name: copymanga-web
     ports:
-      - "8080:8080"
+      - "3000:8080"
     environment:
       - DOWNLOAD_DIR=/downloads
       - STATIC_DIR=/app/static
