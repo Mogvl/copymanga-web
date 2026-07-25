@@ -64,7 +64,10 @@ async fn search(
     Query(q): Query<SearchQuery>,
 ) -> Result<Html<String>, AppError> {
     let state = state.lock().await;
-    let results = state.client.search(&q.q, q.page).await?;
+    let (results, total) = state.client.search(&q.q, q.page).await?;
+
+    let total_pages = (total as f64 / 20.0).ceil() as i64;
+    let page = q.page;
 
     let comics: Vec<serde_json::Value> = results
         .iter()
@@ -82,6 +85,8 @@ async fn search(
     Ok(Html(render_template("search_results", &serde_json::json!({
         "keyword": q.q,
         "comics": comics,
+        "page": page,
+        "total_pages": total_pages,
     }))))
 }
 
@@ -448,6 +453,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 {% endfor %}
 </div>
 {% endif %}
+{% if total_pages > 1 %}
+<div style="display:flex;justify-content:center;gap:5px;margin:20px 0;flex-wrap:wrap">
+{% set start = [page-2,1]|sort|first %}
+{% set end = [page+2,total_pages]|sort|last %}
+{% if page > 1 %}<a href="/search?q={{ keyword }}&page={{ page-1 }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:#333;text-decoration:none">上一页</a>{% endif %}
+{% for p in range(start=start,end=end+1) %}
+<a href="/search?q={{ keyword }}&page={{ p }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:{% if p==page %}#fff;background:#e74c3c;border-color:#e74c3c{% else %}#333;background:#fff{% endif %};text-decoration:none">{{ p }}</a>
+{% endfor %}
+{% if page < total_pages %}<a href="/search?q={{ keyword }}&page={{ page+1 }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:#333;text-decoration:none">下一页</a>{% endif %}
+</div>
+{% endif %}
 <div id="taskModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000">
 <div style="background:#fff;margin:60px auto;max-width:600px;padding:20px;border-radius:12px;max-height:70vh;overflow-y:auto">
 <h2 style="margin-bottom:15px">下载任务</h2><div id="taskList"></div>
@@ -593,6 +609,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 <div class="stat">📖 {{ comic.chapter_count }} 个章节 | 🖼️ {{ comic.total_pages }} 张图片</div>
 </div>
 {% endfor %}</div>
+{% endif %}
+{% if total_pages > 1 %}
+<div style="display:flex;justify-content:center;gap:5px;margin:20px 0;flex-wrap:wrap">
+{% set start = [page-2,1]|sort|first %}
+{% set end = [page+2,total_pages]|sort|last %}
+{% if page > 1 %}<a href="/search?q={{ keyword }}&page={{ page-1 }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:#333;text-decoration:none">上一页</a>{% endif %}
+{% for p in range(start=start,end=end+1) %}
+<a href="/search?q={{ keyword }}&page={{ p }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:{% if p==page %}#fff;background:#e74c3c;border-color:#e74c3c{% else %}#333;background:#fff{% endif %};text-decoration:none">{{ p }}</a>
+{% endfor %}
+{% if page < total_pages %}<a href="/search?q={{ keyword }}&page={{ page+1 }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:#333;text-decoration:none">下一页</a>{% endif %}
+</div>
 {% endif %}
 <div id="taskModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000">
 <div style="background:#fff;margin:60px auto;max-width:600px;padding:20px;border-radius:12px;max-height:70vh;overflow-y:auto">

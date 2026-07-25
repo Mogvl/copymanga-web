@@ -81,7 +81,7 @@ impl CopyMangaClient {
     }
 
     /// 搜索漫画
-    pub async fn search(&self, keyword: &str, page: i64) -> Result<Vec<ComicInSearch>> {
+    pub async fn search(&self, keyword: &str, page: i64) -> Result<(Vec<ComicInSearch>, i64)> {
         let offset = (page - 1) * 20;
         let resp = self
             .api_client
@@ -97,7 +97,8 @@ impl CopyMangaClient {
         }
 
         let list: SearchRespData = serde_json::from_value(resp.results)?;
-        Ok(list.0.list)
+        let total = list.0.total;
+        Ok((list.0.list, total))
     }
 
     /// 获取漫画详情
