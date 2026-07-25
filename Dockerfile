@@ -1,28 +1,43 @@
 # ============ 构建阶段 ============
-FROM rust:1-slim-bookworm AS builder
-
-RUN apt-get update && apt-get install -y pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
-COPY Cargo.toml Cargo.lock* ./
-COPY src/ ./src/
 
-RUN cargo build --release && \
-    strip target/release/copymanga-web && \
-    cp target/release/copymanga-web /copymanga-web
+# 安装依赖
+RUN apk add --no-cache git ca-certificates
+
+# 复制 Go 模块文件
+COPY backend/go.mod backend/go.sum ./
+RUN go mod download
+
+# 复制后端代码
+COPY backend/ ./
+
+# 构建后端
+RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/server
 
 # ============ 运行阶段 ============
-FROM debian:bookworm-slim
+FROM alpine:latest
 
-RUN apt-get update && apt-get install -y ca-certificates libssl3 && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache ca-certificates tzdata
 
-COPY --from=builder /copymanga-web /usr/local/bin/copymanga-web
+WORKDIR /app
+
+# 从构建阶段复制二进制文件
+COPY --from=builder /app/server .
+
+# 复制前端静态文件（如果 CI 没有预先构建）
+COPY backend/static/ ./static/
+
+# 创建下载目录
+RUN mkdir -p /downloads
 
 ENV DOWNLOAD_DIR=/downloads
-ENV PORT=3000
+ENV STATIC_DIR=/app/static
+ENV PORT=8080
 
-EXPOSE 3000
+EXPOSE 8080
 
 VOLUME ["/downloads"]
 
-CMD ["copymanga-web"]
+CMD ["./server"]

@@ -1,22 +1,44 @@
 #!/bin/bash
-# ============ 构建 copymanga-web Docker 镜像 ============
+# ============ 构建 copymanga-web ============
 set -e
 
-echo "🚀 构建 copymanga-web Docker 镜像..."
+echo "🚀 构建 copymanga-web..."
 
-# 构建 Linux amd64 镜像
-docker build -t copymanga-web:latest .
+# 检查是否安装了必要的工具
+check_command() {
+  if ! command -v "$1" &> /dev/null; then
+    echo "❌ 未找到 $1，请先安装"
+    exit 1
+  fi
+}
 
-echo "✅ 构建成功!"
+check_command go
+check_command node
+check_command npm
+
+# 构建前端
+echo "📦 构建前端..."
+cd frontend
+npm install
+npm run build
+cd ..
+
+# 复制前端到后端
+echo "📋 复制前端静态文件..."
+mkdir -p backend/static
+cp -r frontend/dist/* backend/static/
+
+# 构建后端
+echo "🔨 构建后端..."
+cd backend
+go build -o server ./cmd/server
+cd ..
+
+echo "✅ 构建完成!"
 echo ""
-echo "导出镜像文件:"
-echo "  docker save copymanga-web:latest -o copymanga-web.tar"
+echo "运行方式："
+echo "  cd backend && DOWNLOAD_DIR=./downloads STATIC_DIR=./static ./server"
 echo ""
-echo "在绿联云上部署:"
-echo "  1. 将 copymanga-web.tar 上传到绿联云"
-echo "  2. SSH 连接绿联云，执行:"
-echo "     docker load -i copymanga-web.tar"
-echo "     mkdir -p /volume1/漫画"
-echo "     docker compose up -d"
-echo ""
-echo "  或者在绿联云 Docker 项目里直接复制 docker-compose.yml 的内容"
+echo "Docker 构建："
+echo "  docker build -t copymanga-web ."
+echo "  docker run -p 8080:8080 -v /path/to/downloads:/downloads copymanga-web"

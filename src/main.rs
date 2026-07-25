@@ -23,6 +23,7 @@ use types::*;
 struct AppState {
     client: CopyMangaClient,
     manager: Arc<DownloadManager>,
+    token: String,
 }
 
 // ============ 查询参数 ============
@@ -275,22 +276,12 @@ async fn ping_api(
     let state = state.lock().await;
     let domain = state.client.get_api_domain().to_string();
     drop(state);
-    let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(15))
-        .default_headers({
-            let mut h = reqwest::header::HeaderMap::new();
-            h.insert("User-Agent", "COPY/3.0.0".parse().unwrap());
-            h.insert("Accept", "application/json".parse().unwrap());
-            h.insert("version", "2025.08.15".parse().unwrap());
-            h.insert("platform", "1".parse().unwrap());
-            h.insert("webp", "1".parse().unwrap());
-            h.insert("region", "1".parse().unwrap());
-            h
-        })
-        .build().unwrap();
-    let result = client
-        .get(format!("https://{}/api/v3/search/comic", domain))
-        .query(&serde_json::json!({"limit": 5, "offset": 0, "q": "随变", "q_type": "", "platform": 1}))
+    let url = format!("https://{}/api/v3/search/comic?limit=1&offset=0&q=test&q_type=&platform=1", domain);
+    let result = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(10))
+        .build().unwrap()
+        .get(&url)
+        .header("User-Agent", "COPY/3.0.0")
         .send().await;
     match result {
         Ok(resp) => {
@@ -503,11 +494,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 {% endif %}
 {% if total_pages > 1 %}
 <div style="display:flex;justify-content:center;gap:5px;margin:20px 0;flex-wrap:wrap">
-{% set start = [page-2,1]|sort|first %}
-{% set end = [page+2,total_pages]|sort|last %}
 {% if page > 1 %}<a href="/search?q={{ keyword }}&page={{ page-1 }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:#333;text-decoration:none">上一页</a>{% endif %}
-{% for p in range(start=start,end=end+1) %}
+{% for p in range(1, total_pages + 1) %}
+{% if p >= page - 2 and p <= page + 2 %}
 <a href="/search?q={{ keyword }}&page={{ p }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:{% if p==page %}#fff;background:#e74c3c;border-color:#e74c3c{% else %}#333;background:#fff{% endif %};text-decoration:none">{{ p }}</a>
+{% endif %}
 {% endfor %}
 {% if page < total_pages %}<a href="/search?q={{ keyword }}&page={{ page+1 }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:#333;text-decoration:none">下一页</a>{% endif %}
 </div>
@@ -660,11 +651,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 {% endif %}
 {% if total_pages > 1 %}
 <div style="display:flex;justify-content:center;gap:5px;margin:20px 0;flex-wrap:wrap">
-{% set start = [page-2,1]|sort|first %}
-{% set end = [page+2,total_pages]|sort|last %}
 {% if page > 1 %}<a href="/search?q={{ keyword }}&page={{ page-1 }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:#333;text-decoration:none">上一页</a>{% endif %}
-{% for p in range(start=start,end=end+1) %}
+{% for p in range(1, total_pages + 1) %}
+{% if p >= page - 2 and p <= page + 2 %}
 <a href="/search?q={{ keyword }}&page={{ p }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:{% if p==page %}#fff;background:#e74c3c;border-color:#e74c3c{% else %}#333;background:#fff{% endif %};text-decoration:none">{{ p }}</a>
+{% endif %}
 {% endfor %}
 {% if page < total_pages %}<a href="/search?q={{ keyword }}&page={{ page+1 }}" style="padding:6px 12px;border:1px solid #ddd;border-radius:4px;color:#333;text-decoration:none">下一页</a>{% endif %}
 </div>

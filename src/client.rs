@@ -107,26 +107,14 @@ impl CopyMangaClient {
 
     pub async fn search(&self, keyword: &str, page: i64) -> Result<(Vec<ComicInSearch>, i64)> {
         let offset = (page - 1) * 20;
-        let client = Client::builder()
-            .timeout(Duration::from_secs(15))
-            .default_headers({
-                let mut h = reqwest::header::HeaderMap::new();
-                h.insert("User-Agent", "COPY/3.0.0".parse().unwrap());
-                h.insert("Accept", "application/json".parse().unwrap());
-                h.insert("version", "2025.08.15".parse().unwrap());
-                h.insert("platform", "1".parse().unwrap());
-                h.insert("webp", "1".parse().unwrap());
-                h.insert("region", "1".parse().unwrap());
-                h
-            })
-            .build()?;
-        let resp: CopyResp = client
-            .get(format!("https://{}/api/v3/search/comic", self.api_domain))
-            .query(&json!({"limit": 20, "offset": offset, "q": keyword, "q_type": "", "platform": 1}))
-            .send()
-            .await?
-            .json()
-            .await?;
+        let resp = self.send_with_retry(
+            self.api_client
+                .get(format!("https://{}/api/v3/search/comic", self.api_domain))
+                .query(&json!({"limit": 20, "offset": offset, "q": keyword, "q_type": "", "platform": 1})),
+            2,
+        ).await?
+        .json::<CopyResp>()
+        .await?;
 
         if resp.code != 200 {
             return Err(eyre!("搜索失败: {}", resp.message));

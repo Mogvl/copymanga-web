@@ -5,14 +5,13 @@ services:
 
     container_name: copymanga-web
     ports:
-      - "3000:3000"
+      - "8080:8080"
     environment:
       # 下载目录（容器内路径）
       - DOWNLOAD_DIR=/downloads
-      - PORT=3000
-      # 可选: 用登录后的 token 避免风控
-      # - TOKEN=你的token
+      - STATIC_DIR=/app/static
+      - PORT=8080
     volumes:
-      # !!! 重要: 把 /volume1/漫画 改成你绿联云上存漫画的路径 !!!
+      # !!! 重要: 把 /volume1/漫画 改成你存漫画的路径 !!!
       - /volume1/漫画:/downloads
     restart: unless-stopped

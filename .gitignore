@@ -1,2 +1,26 @@
+# Go
+backend/server
+backend/static/
+backend/downloads/
+*.exe
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Rust (旧版)
 target/
 Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar
