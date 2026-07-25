@@ -56,6 +56,7 @@ function handleSubmit() {
   lastKeyword.value = ''
   page.value = 1
   router.push({ name: 'search', query: { q: keyword.value, page: 1 } })
+  doSearch()
 }
 
 function goBack() {

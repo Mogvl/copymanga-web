@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -73,7 +74,11 @@ func (dm *DownloadManager) StartDownload(taskID, comicPathWord, chapterUUID stri
 	dm.mu.Unlock()
 
 	// 创建下载目录
-	chapterDir := filepath.Join(dm.downloadDir, task.ComicName, chapterUUID)
+	chapterName := sanitizeFilename(task.ChapterTitle)
+	if chapterName == "" {
+		chapterName = chapterUUID
+	}
+	chapterDir := filepath.Join(dm.downloadDir, task.ComicName, chapterName)
 	if err := os.MkdirAll(chapterDir, 0755); err != nil {
 		dm.logger.Error("创建目录失败", zap.Error(err))
 		dm.updateTaskStatus(taskID, "failed", "创建目录失败")
@@ -240,4 +245,14 @@ func countFiles(dir string) int64 {
 		return nil
 	})
 	return count
+}
+
+// sanitizeFilename 清理文件名中的非法字符
+func sanitizeFilename(name string) string {
+	name = strings.TrimSpace(name)
+	replacer := strings.NewReplacer(
+		"/", "_", "\\", "_", ":", "_", "*", "_",
+		"?", "_", "\"", "_", "<", "_", ">", "_", "|", "_",
+	)
+	return replacer.Replace(name)
 }
