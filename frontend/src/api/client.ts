@@ -63,6 +63,8 @@ export async function startDownload(
   comicPathWord: string,
   chapterUUID: string,
   chapterTitle: string,
+  groupTitle: string,
+  order: number,
   imageFormat?: string
 ): Promise<string> {
   const { data } = await api.post('/download', {
@@ -70,6 +72,8 @@ export async function startDownload(
     comic_path_word: comicPathWord,
     chapter_uuid: chapterUUID,
     chapter_title: chapterTitle,
+    group_title: groupTitle,
+    order: order,
     image_format: imageFormat || 'webp'
   })
   if (!data.success) {

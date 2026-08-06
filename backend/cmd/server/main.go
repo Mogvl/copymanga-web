@@ -32,6 +32,13 @@ func main() {
 	staticDir := getEnv("STATIC_DIR", "./static")
 	token := getEnv("TOKEN", "")
 
+	// 下载相关可配置项（环境变量，默认值在 NewDownloadManager 内兜底）
+	options := service.DownloadOptions{
+		ImageConcurrency:   getEnvInt("IMAGE_CONCURRENCY", 5),
+		ImageRetry:         getEnvInt("IMAGE_RETRY", 3),
+		ChapterIntervalSec: getEnvInt("CHAPTER_INTERVAL_SEC", 0),
+	}
+
 	// 创建客户端
 	c := client.New(logger)
 	if token != "" {
@@ -39,7 +46,7 @@ func main() {
 	}
 
 	// 创建下载管理器
-	manager := service.NewDownloadManager(c, downloadDir, logger)
+	manager := service.NewDownloadManager(c, downloadDir, options, logger)
 
 	// 创建处理器
 	handler := api.NewHandler(c, manager, logger)
@@ -80,6 +87,16 @@ func main() {
 func getEnv(key, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
+	}
+	return defaultValue
+}
+
+func getEnvInt(key string, defaultValue int) int {
+	if value, exists := os.LookupEnv(key); exists {
+		var n int
+		if _, err := fmt.Sscanf(value, "%d", &n); err == nil {
+			return n
+		}
 	}
 	return defaultValue
 }

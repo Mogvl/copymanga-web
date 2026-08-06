@@ -62,6 +62,16 @@ function search() {
 
       <!-- 功能入口 -->
       <div class="features">
+        <router-link to="/tasks" class="feature-card">
+          <div class="feature-icon">⬇️</div>
+          <div class="feature-info">
+            <h3>下载任务</h3>
+            <p>查看下载进度和任务状态</p>
+          </div>
+          <svg class="feature-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </router-link>
         <router-link to="/downloaded" class="feature-card">
           <div class="feature-icon">📥</div>
           <div class="feature-info">

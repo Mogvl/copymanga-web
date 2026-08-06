@@ -37,22 +37,22 @@ type SearchRespData struct {
 
 // GetComicRespData 获取漫画详情响应
 type GetComicRespData struct {
-	IsBanned bool              `json:"is_banned"`
-	Comic    ComicDetail       `json:"comic"`
-	Popular  int64             `json:"popular"`
-	Groups   map[string]Group  `json:"groups"`
+	IsBanned bool             `json:"is_banned"`
+	Comic    ComicDetail      `json:"comic"`
+	Popular  int64            `json:"popular"`
+	Groups   map[string]Group `json:"groups"`
 }
 
 // ComicDetail 漫画详情
 type ComicDetail struct {
-	UUID           string        `json:"uuid"`
-	Name           string        `json:"name"`
-	PathWord       string        `json:"path_word"`
-	Author         []AuthorInfo  `json:"author"`
-	Cover          string        `json:"cover"`
-	Brief          string        `json:"brief"`
-	Status         LabeledValue  `json:"status"`
-	Theme          []ThemeInfo   `json:"theme"`
+	UUID            string       `json:"uuid"`
+	Name            string       `json:"name"`
+	PathWord        string       `json:"path_word"`
+	Author          []AuthorInfo `json:"author"`
+	Cover           string       `json:"cover"`
+	Brief           string       `json:"brief"`
+	Status          LabeledValue `json:"status"`
+	Theme           []ThemeInfo  `json:"theme"`
 	DateTimeUpdated string       `json:"datetime_updated"`
 }
 
@@ -103,12 +103,12 @@ type GetChapterRespData struct {
 
 // ChapterContent 章节内容
 type ChapterContent struct {
-	UUID          string        `json:"uuid"`
-	Name          string        `json:"name"`
-	ComicPathWord string        `json:"comic_path_word"`
-	GroupPathWord string        `json:"group_path_word"`
-	Contents      []ContentURL  `json:"contents"`
-	Words         []int64       `json:"words"`
+	UUID          string       `json:"uuid"`
+	Name          string       `json:"name"`
+	ComicPathWord string       `json:"comic_path_word"`
+	GroupPathWord string       `json:"group_path_word"`
+	Contents      []ContentURL `json:"contents"`
+	Words         []int64      `json:"words"`
 }
 
 // ContentURL 内容URL
@@ -129,17 +129,20 @@ type UserProfile struct {
 
 // DownloadTask 下载任务
 type DownloadTask struct {
-	ID              string `json:"id"`
-	ComicName       string `json:"comic_name"`
-	ComicPathWord   string `json:"comic_path_word"`
-	ChapterUUID     string `json:"chapter_uuid"`
-	ChapterTitle    string `json:"chapter_title"`
-	ImageFormat     string `json:"image_format"`
-	Status          string `json:"status"` // pending, downloading, completed, failed
-	Progress        string `json:"progress"`
-	TotalPages      int    `json:"total_pages"`
-	DownloadedPages int    `json:"downloaded_pages"`
-	CreatedAt       string `json:"created_at"`
+	ID              string  `json:"id"`
+	ComicName       string  `json:"comic_name"`
+	ComicPathWord   string  `json:"comic_path_word"`
+	ChapterUUID     string  `json:"chapter_uuid"`
+	GroupTitle      string  `json:"group_title"`
+	Order           float64 `json:"order"`
+	ChapterTitle    string  `json:"chapter_title"`
+	ImageFormat     string  `json:"image_format"`
+	Status          string  `json:"status"` // pending, downloading, completed, failed
+	Progress        string  `json:"progress"`
+	TotalPages      int     `json:"total_pages"`
+	DownloadedPages int     `json:"downloaded_pages"`
+	Error           string  `json:"error,omitempty"`
+	CreatedAt       string  `json:"created_at"`
 }
 
 // DownloadedComic 已下载漫画

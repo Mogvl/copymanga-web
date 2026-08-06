@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -410,6 +411,13 @@ func (c *Client) GetChapterImages(comicPathWord, chapterUUID string) (*model.Get
 	var chapterResp model.GetChapterRespData
 	if err := json.Unmarshal(copyResp.Results, &chapterResp); err != nil {
 		return nil, fmt.Errorf("解析章节图片数据失败")
+	}
+
+	// 替换为高清图片 URL（与原版一致：.c800x. -> .c1500x.）
+	for i := range chapterResp.Chapter.Contents {
+		chapterResp.Chapter.Contents[i].URL = strings.ReplaceAll(
+			chapterResp.Chapter.Contents[i].URL, ".c800x.", ".c1500x.",
+		)
 	}
 
 	return &chapterResp, nil

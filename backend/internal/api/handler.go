@@ -249,11 +249,13 @@ func (h *Handler) GetChapterImages(c *gin.Context) {
 
 // DownloadRequest 下载请求
 type DownloadRequest struct {
-	ComicName     string   `json:"comic_name" binding:"required"`
-	ComicPathWord string   `json:"comic_path_word" binding:"required"`
-	ChapterUUID   string   `json:"chapter_uuid" binding:"required"`
-	ChapterTitle  string   `json:"chapter_title"`
-	ImageFormat   string   `json:"image_format"`
+	ComicName     string  `json:"comic_name" binding:"required"`
+	ComicPathWord string  `json:"comic_path_word" binding:"required"`
+	ChapterUUID   string  `json:"chapter_uuid" binding:"required"`
+	GroupTitle    string  `json:"group_title"`
+	Order         float64 `json:"order"`
+	ChapterTitle  string  `json:"chapter_title"`
+	ImageFormat   string  `json:"image_format"`
 }
 
 // StartDownload 开始下载
@@ -283,6 +285,8 @@ func (h *Handler) StartDownload(c *gin.Context) {
 		req.ComicName,
 		req.ComicPathWord,
 		req.ChapterUUID,
+		req.GroupTitle,
+		req.Order,
 		req.ChapterTitle,
 		req.ImageFormat,
 		chapterResp.Chapter.Contents,
@@ -293,6 +297,9 @@ func (h *Handler) StartDownload(c *gin.Context) {
 		taskID,
 		req.ComicPathWord,
 		req.ChapterUUID,
+		req.ChapterTitle,
+		req.GroupTitle,
+		req.Order,
 		req.ImageFormat,
 		chapterResp.Chapter.Contents,
 		chapterResp.Chapter.Words,

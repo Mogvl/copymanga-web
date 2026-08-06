@@ -85,7 +85,15 @@ async function downloadSelected(groupKey: string) {
     for (const chapterUUID of selected) {
       const chapter = chapters.value[groupKey].find(c => c.uuid === chapterUUID)
       if (chapter) {
-        await startDownload(comic.value.comic.name, comic.value.comic.path_word, chapterUUID, chapter.name, imageFormat.value)
+        await startDownload(
+          comic.value.comic.name,
+          comic.value.comic.path_word,
+          chapterUUID,
+          chapter.name,
+          comic.value.groups[groupKey].name,
+          chapter.ordered / 10,
+          imageFormat.value
+        )
       }
     }
     showToast(`已创建 ${selected.size} 个下载任务`)
@@ -134,6 +142,7 @@ onMounted(loadComic)
         <div class="header-right">
           <router-link to="/" class="nav-btn">首页</router-link>
           <router-link to="/downloaded" class="nav-btn">下载</router-link>
+          <router-link to="/tasks" class="nav-btn">任务</router-link>
         </div>
       </div>
     </header>

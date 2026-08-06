@@ -90,11 +90,15 @@ export interface DownloadTask {
   comic_name: string
   comic_path_word: string
   chapter_uuid: string
+  group_title: string
+  order: number
   chapter_title: string
+  image_format: string
   status: 'pending' | 'downloading' | 'completed' | 'failed'
   progress: string
   total_pages: number
   downloaded_pages: number
+  error?: string
   created_at: string
 }
 

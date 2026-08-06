@@ -42,7 +42,9 @@ function goBack() {
           <span>返回首页</span>
         </button>
         <div class="header-title">📥 已下载</div>
-        <div class="header-right"></div>
+        <div class="header-right">
+          <router-link to="/tasks" class="nav-btn">任务</router-link>
+        </div>
       </div>
     </header>
 
@@ -197,7 +199,23 @@ function goBack() {
 }
 
 .header-right {
-  width: 100px;
+  display: flex;
+  gap: 8px;
+}
+
+.nav-btn {
+  padding: 8px 16px;
+  background: var(--card);
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.nav-btn:hover {
+  color: var(--primary);
 }
 
 /* 主内容 */

@@ -26,3 +26,7 @@ Thumbs.db
 *.tar
 backend/downloads/
 downloads/
+
+# Build artifacts
+backend/server.exe~
+backend/server
