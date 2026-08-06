@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"path/filepath"
 
 	"copymanga-backend/internal/client"
@@ -144,6 +145,11 @@ func (h *Handler) Search(c *gin.Context) {
 	page := int64(1)
 	if p := c.Query("page"); p != "" {
 		fmt.Sscanf(p, "%d", &page)
+	}
+
+	// 兜底：若关键词因双重编码仍带 % 转义，先解码一次，避免再被 QueryEscape 双重编码
+	if unescaped, err := url.QueryUnescape(keyword); err == nil && unescaped != keyword {
+		keyword = unescaped
 	}
 
 	searchResp, err := h.client.Search(keyword, page)
