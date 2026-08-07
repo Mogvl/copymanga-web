@@ -37,18 +37,18 @@ docker save copymanga-web:latest -o copymanga-web.tar
 前后端分离项目，本地跑起来需要两个终端：
 
 ```bash
-# 终端 1：启动后端（监听 3000）
+# 终端 1：启动后端（监听 3001）
 cd backend
-DOWNLOAD_DIR=../downloads STATIC_DIR=./static PORT=3000 ./server
-# 或编译后运行： go build -o server ./cmd/server && ...
+DOWNLOAD_DIR=../downloads STATIC_DIR=./static PORT=3001 ./server
+# 或先编译再运行： go build -o server ./cmd/server && ...
 
-# 终端 2：前端开发服务器（访问 http://localhost:5173）
+# 终端 2：前端开发服务器（访问 http://localhost:3000，热更新）
 cd frontend
 npm install
 npm run dev
 ```
 
-> 本地后端监听 **3000**，与绿联云部署的对外端口保持一致；前端 vite 已把 `/api` 代理到 `http://localhost:3000`（见 `frontend/vite.config.ts`）。
+> 前端 vite 监听 **3000**（热更新，改代码即刷新），并把 `/api` 代理到后端 **3001**；后端 Go 服务内部监听 **3001**（见 `frontend/vite.config.ts`）。
 
 ### 2. 部署到绿联云
 
@@ -149,8 +149,8 @@ cp -r dist/* ../backend/static/
 cd ../backend
 go build -o server ./cmd/server
 
-# 本地运行（监听 3000，默认端口 8080，两者皆可）
-# PORT=3000 ./server
+# 本地运行（默认端口 8080；可设 PORT 覆盖，如与前端联调用 3001）
+# PORT=3001 ./server
 
 # 或者直接构建 Docker 镜像
 docker build -t copymanga-web .
