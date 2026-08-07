@@ -97,6 +97,73 @@ export async function getDownloadedComics(): Promise<DownloadedComic[]> {
   return data.data
 }
 
+// 下载并触发浏览器保存 PDF blob
+function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
+// 解析可能为错误 JSON 的 blob
+async function asError(blob: Blob): Promise<string> {
+  try {
+    const text = await blob.text()
+    const parsed = JSON.parse(text)
+    return parsed.message || parsed.error || text
+  } catch {
+    return '导出失败'
+  }
+}
+
+// 导出单章 PDF
+export async function exportChapterPdf(
+  params: {
+    comicName: string
+    comicPathWord: string
+    chapterUUID: string
+    groupTitle: string
+    order: number
+    chapterTitle: string
+    useLocalOnly?: boolean
+  },
+  filename: string
+): Promise<void> {
+  const { data } = await api.post('/export/chapter-pdf', {
+    comic_name: params.comicName,
+    comic_path_word: params.comicPathWord,
+    chapter_uuid: params.chapterUUID,
+    group_title: params.groupTitle,
+    order: params.order,
+    chapter_title: params.chapterTitle,
+    use_local_only: params.useLocalOnly || false
+  }, { responseType: 'blob' })
+  if (data instanceof Blob && data.type === 'application/json') {
+    throw new Error(await asError(data))
+  }
+  downloadBlob(data as Blob, filename)
+}
+
+// 导出整本 PDF
+export async function exportComicPdf(
+  params: { comicName: string; comicPathWord: string; useLocalOnly?: boolean },
+  filename: string
+): Promise<void> {
+  const { data } = await api.post('/export/comic-pdf', {
+    comic_name: params.comicName,
+    comic_path_word: params.comicPathWord,
+    use_local_only: params.useLocalOnly || false
+  }, { responseType: 'blob' })
+  if (data instanceof Blob && data.type === 'application/json') {
+    throw new Error(await asError(data))
+  }
+  downloadBlob(data as Blob, filename)
+}
+
 // 测试 API
 export async function ping(): Promise<{ status: number; ok: boolean; body_preview: string }> {
   const { data } = await api.get('/ping')

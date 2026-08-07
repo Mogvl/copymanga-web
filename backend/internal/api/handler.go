@@ -14,17 +14,19 @@ import (
 
 // Handler API 处理器
 type Handler struct {
-	client  *client.Client
-	manager *service.DownloadManager
-	logger  *zap.Logger
+	client   *client.Client
+	manager  *service.DownloadManager
+	exporter *service.PdfExporter
+	logger   *zap.Logger
 }
 
 // NewHandler 创建处理器
-func NewHandler(c *client.Client, m *service.DownloadManager, logger *zap.Logger) *Handler {
+func NewHandler(c *client.Client, m *service.DownloadManager, e *service.PdfExporter, logger *zap.Logger) *Handler {
 	return &Handler{
-		client:  c,
-		manager: m,
-		logger:  logger,
+		client:   c,
+		manager:  m,
+		exporter: e,
+		logger:   logger,
 	}
 }
 
@@ -43,6 +45,8 @@ func (h *Handler) RegisterRoutes(r *gin.Engine) {
 		api.POST("/download", h.StartDownload)
 		api.GET("/tasks", h.GetTasks)
 		api.GET("/downloaded", h.GetDownloadedComics)
+		api.POST("/export/chapter-pdf", h.ExportChapterPDF)
+		api.POST("/export/comic-pdf", h.ExportComicPDF)
 	}
 }
 
@@ -340,6 +344,97 @@ func (h *Handler) GetDownloadedComics(c *gin.Context) {
 		"success": true,
 		"data":    comics,
 	})
+}
+
+// ExportChapterPDFRequest 单章 PDF 导出请求
+type ExportChapterPDFRequest struct {
+	ComicName     string  `json:"comic_name" binding:"required"`
+	ComicPathWord string  `json:"comic_path_word" binding:"required"`
+	ChapterUUID   string  `json:"chapter_uuid" binding:"required"`
+	GroupTitle    string  `json:"group_title"`
+	Order         float64 `json:"order"`
+	ChapterTitle  string  `json:"chapter_title"`
+	ImageFormat   string  `json:"image_format"`
+	UseLocalOnly  bool    `json:"use_local_only"`
+}
+
+// ExportChapterPDF 导出单章 PDF
+func (h *Handler) ExportChapterPDF(c *gin.Context) {
+	var req ExportChapterPDFRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "参数错误: " + err.Error(),
+		})
+		return
+	}
+
+	data, err := h.exporter.ExportChapterPdf(service.ExportChapterParams{
+		ComicName:     req.ComicName,
+		ComicPathWord: req.ComicPathWord,
+		ChapterUUID:   req.ChapterUUID,
+		GroupTitle:    req.GroupTitle,
+		Order:         req.Order,
+		ChapterTitle:  req.ChapterTitle,
+		UseLocalOnly:  req.UseLocalOnly,
+	})
+	if err != nil {
+		h.logger.Error("导出章节 PDF 失败", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "导出失败: " + err.Error(),
+		})
+		return
+	}
+
+	filename := service.SanitizeDownloadName(req.ChapterTitle)
+	if filename == "" {
+		filename = "chapter"
+	}
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.pdf"`, filename))
+	c.Data(http.StatusOK, "application/pdf", data)
+}
+
+// ExportComicPDFRequest 整本 PDF 导出请求
+type ExportComicPDFRequest struct {
+	ComicName     string `json:"comic_name" binding:"required"`
+	ComicPathWord string `json:"comic_path_word" binding:"required"`
+	UseLocalOnly  bool   `json:"use_local_only"`
+}
+
+// ExportComicPDF 导出整本 PDF
+func (h *Handler) ExportComicPDF(c *gin.Context) {
+	var req ExportComicPDFRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "参数错误: " + err.Error(),
+		})
+		return
+	}
+
+	data, err := h.exporter.ExportComicPdf(service.ExportComicParams{
+		ComicName:     req.ComicName,
+		ComicPathWord: req.ComicPathWord,
+		UseLocalOnly:  req.UseLocalOnly,
+	})
+	if err != nil {
+		h.logger.Error("导出整本 PDF 失败", zap.Error(err))
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"message": "导出失败: " + err.Error(),
+		})
+		return
+	}
+
+	filename := service.SanitizeDownloadName(req.ComicName)
+	if filename == "" {
+		filename = "comic"
+	}
+	c.Header("Content-Type", "application/pdf")
+	c.Header("Content-Disposition", fmt.Sprintf(`attachment; filename="%s.pdf"`, filename))
+	c.Data(http.StatusOK, "application/pdf", data)
 }
 
 // ServeStatic 提供静态文件服务

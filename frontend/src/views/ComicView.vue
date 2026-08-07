@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getComic, getGroupChapters, startDownload } from '../api/client'
+import { getComic, getGroupChapters, startDownload, exportChapterPdf } from '../api/client'
 import type { GetComicRespData, ChapterItem } from '../types'
 
 const route = useRoute()
@@ -12,6 +12,7 @@ const loading = ref(true)
 const error = ref('')
 const selectedChapters = ref<Record<string, Set<string>>>({})
 const downloading = ref(false)
+const exporting = ref<string | null>(null)
 const imageFormat = ref('webp')
 const toast = ref('')
 const toastTimeout = ref<number | null>(null)
@@ -101,6 +102,30 @@ async function downloadSelected(groupKey: string) {
     showToast('创建下载任务失败: ' + e.message)
   } finally {
     downloading.value = false
+  }
+}
+
+async function exportChapter(groupKey: string, chapter: ChapterItem) {
+  if (!comic.value) return
+  exporting.value = chapter.uuid
+  try {
+    const filename = `${comic.value.comic.name} ${chapter.name}.pdf`
+    await exportChapterPdf(
+      {
+        comicName: comic.value.comic.name,
+        comicPathWord: comic.value.comic.path_word,
+        chapterUUID: chapter.uuid,
+        groupTitle: comic.value.groups[groupKey].name,
+        order: chapter.ordered / 10,
+        chapterTitle: chapter.name
+      },
+      filename
+    )
+    showToast('PDF 已开始下载')
+  } catch (e: any) {
+    showToast('导出失败: ' + (e.message || '未知错误'))
+  } finally {
+    exporting.value = null
   }
 }
 
@@ -248,6 +273,14 @@ onMounted(loadComic)
               <span class="chapter-order">{{ (chapter.ordered / 10).toFixed(1) }}</span>
               <span class="chapter-name">{{ chapter.name }}</span>
               <span class="chapter-pages">{{ chapter.count }}P</span>
+              <button
+                class="pdf-btn"
+                :disabled="exporting === chapter.uuid"
+                @click.stop="exportChapter(groupKey as string, chapter)"
+                :title="'导出 ' + chapter.name + ' 为 PDF'"
+              >
+                {{ exporting === chapter.uuid ? '导出中...' : 'PDF' }}
+              </button>
             </div>
           </div>
         </div>
@@ -672,6 +705,29 @@ onMounted(loadComic)
   flex-shrink: 0;
   font-size: 11px;
   color: var(--text-hint);
+}
+
+.pdf-btn {
+  flex-shrink: 0;
+  margin-left: 4px;
+  padding: 3px 10px;
+  background: var(--primary-light);
+  border: none;
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pdf-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+}
+
+.pdf-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* 移动端适配 */

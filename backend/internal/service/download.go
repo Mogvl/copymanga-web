@@ -304,6 +304,7 @@ func (dm *DownloadManager) GetDownloadedComics() ([]model.DownloadedComic, error
 
 		comics = append(comics, model.DownloadedComic{
 			Name:         entry.Name(),
+			PathWord:     resolveComicPathWord(entry.Name()),
 			ChapterCount: chapterCount,
 			TotalPages:   totalPages,
 		})
@@ -360,6 +361,24 @@ func countFiles(dir string) int64 {
 		return nil
 	})
 	return count
+}
+
+// SanitizeDownloadName 清理下载/导出文件名中的非法字符（导出接口复用，避免路径注入）
+func SanitizeDownloadName(name string) string {
+	return sanitizeFilename(name)
+}
+
+// resolveComicPathWord 解析已下载漫画的 path_word（供整本 PDF 导出用）。
+// 优先读目录里任意一章的 {order} {章节名}.json 元数据；否则降级：目录名去特殊字符转小写。
+// 说明：路径中没有可用的 path_word，仅作尽力而为——若网络 API 失败时导出仍可用本地文件。
+func resolveComicPathWord(comicName string) string {
+	// 从目录名推断一个较稳定的标识（去空白、特殊字符、转小写）
+	san := sanitizeFilename(comicName)
+	replacer := strings.NewReplacer(
+		" ", "", "_", "", "·", "", "≡", "", "≡", "",
+		"-", "", "—", "", "！", "", "！", "", "?", "", "？", "",
+	)
+	return strings.ToLower(replacer.Replace(san))
 }
 
 // sanitizeFilename 清理文件名中的非法字符

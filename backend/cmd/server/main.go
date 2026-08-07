@@ -48,8 +48,11 @@ func main() {
 	// 创建下载管理器
 	manager := service.NewDownloadManager(c, downloadDir, options, logger)
 
+	// 创建 PDF 导出器
+	exporter := service.NewPdfExporter(c, downloadDir, options, logger)
+
 	// 创建处理器
-	handler := api.NewHandler(c, manager, logger)
+	handler := api.NewHandler(c, manager, exporter, logger)
 
 	// 配置 Gin
 	gin.SetMode(gin.ReleaseMode)

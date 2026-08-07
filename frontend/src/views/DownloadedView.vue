@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getDownloadedComics } from '../api/client'
+import { getDownloadedComics, exportComicPdf } from '../api/client'
 import type { DownloadedComic } from '../types'
 
 const router = useRouter()
 const comics = ref<DownloadedComic[]>([])
 const loading = ref(true)
 const error = ref('')
+const exporting = ref('')
 
 onMounted(async () => {
   try {
@@ -18,6 +19,25 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+async function exportPdf(comic: DownloadedComic) {
+  exporting.value = comic.name
+  try {
+    const filename = `${comic.name}.pdf`
+    await exportComicPdf(
+      {
+        comicName: comic.name,
+        comicPathWord: comic.path_word
+      },
+      filename
+    )
+    alert('PDF 已开始下载')
+  } catch (e: any) {
+    alert('导出失败: ' + (e.message || '未知错误'))
+  } finally {
+    exporting.value = ''
+  }
+}
 
 function goBack() {
   router.push('/')
@@ -102,6 +122,13 @@ function goBack() {
                 </span>
               </div>
             </div>
+            <button
+              class="pdf-btn"
+              :disabled="exporting === comic.name"
+              @click="exportPdf(comic)"
+            >
+              {{ exporting === comic.name ? '导出中...' : '导出整本 PDF' }}
+            </button>
           </div>
         </div>
       </template>
@@ -364,6 +391,28 @@ function goBack() {
 
 .stat-divider {
   color: var(--divider);
+}
+
+.pdf-btn {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  background: var(--primary-light);
+  border: none;
+  border-radius: 18px;
+  font-size: 13px;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pdf-btn:hover:not(:disabled) {
+  background: var(--primary);
+  color: white;
+}
+
+.pdf-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* 移动端适配 */
