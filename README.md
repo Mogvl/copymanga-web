@@ -11,6 +11,8 @@
 - ✅ **下载进度** — 实时查看下载进度
 - ✅ **下载任务** — 任务页实时刷新，失败自动重试并提示原因
 - ✅ **高清图** — 自动下载高清版图片 (`.c1500x.`)
+- ✅ **格式选择** — 下载时可选 WebP / JPG 图片格式
+- ✅ **PDF 导出** — 单章或整本一键导出为 PDF（本地已下载为主，缺图在线补足）
 - ✅ **已下载列表** — 查看已下载的漫画
 - ✅ **Web 界面** — 浏览器访问即可操作
 - ✅ **Docker 部署** — 一键部署
@@ -127,6 +129,10 @@ services:
       - DOWNLOAD_DIR=/downloads
       - STATIC_DIR=/app/static
       - PORT=8080
+      # 可选：图片并发数、重试次数、章节间隔（缓解风控）
+      - IMAGE_CONCURRENCY=5
+      - IMAGE_RETRY=3
+      - CHAPTER_INTERVAL_SEC=0
     volumes:
       - /volume1/漫画:/downloads
     restart: unless-stopped
