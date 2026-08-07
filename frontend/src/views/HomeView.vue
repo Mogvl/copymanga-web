@@ -24,11 +24,62 @@ function search() {
       <!-- Logo 区域 -->
       <div class="logo-section">
         <div class="logo-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" fill="none">
-            <rect x="3" y="3" width="26" height="26" rx="8" stroke="currentColor" stroke-width="1.4"/>
-            <circle cx="12" cy="12" r="1.8" fill="currentColor"/>
-            <circle cx="20" cy="12" r="1.8" fill="currentColor"/>
-            <path d="M10 20c2.2 1.8 9.8 1.8 12 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <svg viewBox="0 0 120 120" fill="none">
+            <defs>
+              <!-- 星球本体渐变 -->
+              <radialGradient id="planetCore" cx="35%" cy="32%" r="75%">
+                <stop offset="0%" stop-color="#D8B4FE"/>
+                <stop offset="38%" stop-color="#A78BFA"/>
+                <stop offset="72%" stop-color="#7C4BE0"/>
+                <stop offset="100%" stop-color="#5B21B6"/>
+              </radialGradient>
+              <!-- 大气层弥散光 -->
+              <radialGradient id="planetAtmo" cx="50%" cy="50%" r="50%">
+                <stop offset="55%" stop-color="#C4B5FD" stop-opacity="0"/>
+                <stop offset="100%" stop-color="#A78BFA" stop-opacity="0.35"/>
+              </radialGradient>
+              <!-- 表面亮纹 -->
+              <linearGradient id="planetBand" x1="0" y1="0" x2="0.3" y2="1">
+                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.28"/>
+                <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.18"/>
+              </linearGradient>
+              <!-- 轨道线 -->
+              <linearGradient id="ringGlow" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#E9D5FF"/>
+                <stop offset="100%" stop-color="#C4B5FD"/>
+              </linearGradient>
+            </defs>
+
+            <!-- 内圈旋转光环 -->
+            <circle cx="60" cy="60" r="48" stroke="url(#ringGlow)" stroke-width="1" stroke-dasharray="2 9" stroke-linecap="round" opacity="0.7">
+              <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="30s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- 轨道圆点 -->
+            <circle cx="102" cy="60" r="3" fill="#E9D5FF">
+              <animateMotion dur="14s" repeatCount="indefinite" path="M 60 18 a 42 42 0 1 1 -0.01 0 Z"/>
+            </circle>
+
+            <!-- 大气层弥散 -->
+            <circle cx="60" cy="60" r="34" fill="url(#planetAtmo)">
+              <animate attributeName="opacity" values="0.9;1;0.9" dur="4s" repeatCount="indefinite"/>
+            </circle>
+
+            <!-- 星球本体 -->
+            <circle cx="60" cy="60" r="30" fill="url(#planetCore)"/>
+
+            <!-- 表面高光弧 -->
+            <path d="M42 48 a26 26 0 0 1 22 -12" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+            <path d="M40 66 a26 26 0 0 0 22 12" stroke="#5B21B6" stroke-opacity="0.35" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+
+            <!-- 表面云带 -->
+            <ellipse cx="60" cy="64" rx="16" ry="4.5" fill="url(#planetBand)" opacity="0.7"/>
+            <ellipse cx="60" cy="52" rx="11" ry="3" fill="url(#planetBand)" opacity="0.55"/>
+
+            <!-- 离轴光斑 -->
+            <circle cx="50" cy="50" r="6" fill="#FFFFFF" opacity="0.30"/>
+            <circle cx="47" cy="47" r="2.2" fill="#FFFFFF" opacity="0.9"/>
           </svg>
         </div>
         <h1 class="logo-title">拷贝漫画下载器</h1>
@@ -173,18 +224,26 @@ function search() {
 }
 
 .logo-mark {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 28px;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 32px;
   color: var(--primary);
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: floatMark 5s ease-in-out infinite;
+  filter: drop-shadow(0 16px 32px rgba(91, 33, 182, 0.30));
+}
+
+@keyframes floatMark {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .logo-mark svg {
   width: 100%;
   height: 100%;
+  overflow: visible;
 }
 
 .logo-title {
