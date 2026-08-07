@@ -30,3 +30,6 @@ downloads/
 # Build artifacts
 backend/server.exe~
 backend/server
+
+# Claude Code 本机技能链接镜像（内容在 .agents/skills，符号链接不入库）
+.claude/skills/
