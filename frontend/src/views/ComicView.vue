@@ -148,17 +148,15 @@ onMounted(loadComic)
 
 <template>
   <div class="comic-view">
-    <!-- 背景 -->
-    <div class="bg">
-      <div class="bg-circle bg-circle-1"></div>
-      <div class="bg-circle bg-circle-2"></div>
-    </div>
+    <!-- 弥散粉紫背景光环 -->
+    <div class="aura aura-1"></div>
+    <div class="aura aura-2"></div>
 
     <!-- 顶部导航 -->
     <header class="header">
       <div class="header-content">
         <button class="back-btn" @click="goBack">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
           <span>返回</span>
@@ -194,7 +192,7 @@ onMounted(loadComic)
       <!-- 漫画详情 -->
       <template v-else-if="comic">
         <!-- 漫画信息卡片 -->
-        <div class="info-card">
+        <div class="info-card glass">
           <div class="comic-cover">
             <img :src="comic.comic.cover" :alt="comic.comic.name" />
           </div>
@@ -219,15 +217,15 @@ onMounted(loadComic)
         </div>
 
         <!-- 简介 -->
-        <div v-if="comic.comic.brief" class="section-card">
-          <h2 class="section-title">📖 简介</h2>
+        <div v-if="comic.comic.brief" class="section-card glass">
+          <h2 class="section-title">简介</h2>
           <p class="brief-text">{{ comic.comic.brief }}</p>
         </div>
 
         <!-- 章节列表 -->
-        <div v-for="(group, groupKey) in comic.groups" :key="groupKey" class="section-card">
+        <div v-for="(group, groupKey) in comic.groups" :key="groupKey" class="section-card glass">
           <div class="section-header">
-            <h2 class="section-title">📚 {{ group.name }}</h2>
+            <h2 class="section-title">{{ group.name }}</h2>
             <span class="chapter-count">{{ chapters[groupKey as string]?.length || 0 }} 章</span>
           </div>
 
@@ -263,11 +261,11 @@ onMounted(loadComic)
               @click="toggleChapter(groupKey as string, chapter.uuid)"
             >
               <span class="chapter-check">
-                <svg v-if="isSelected(groupKey as string, chapter.uuid)" viewBox="0 0 24 24" fill="var(--primary)">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                <svg v-if="isSelected(groupKey as string, chapter.uuid)" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9.55 15.16 5.39 11 4 12.39l5.55 5.55L20 7.39 18.61 6z"/>
                 </svg>
-                <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
+                <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="9"/>
                 </svg>
               </span>
               <span class="chapter-order">{{ (chapter.ordered / 10).toFixed(1) }}</span>
@@ -279,7 +277,7 @@ onMounted(loadComic)
                 @click.stop="exportChapter(groupKey as string, chapter)"
                 :title="'导出 ' + chapter.name + ' 为 PDF'"
               >
-                {{ exporting === chapter.uuid ? '导出中...' : 'PDF' }}
+                {{ exporting === chapter.uuid ? '导出中' : 'PDF' }}
               </button>
             </div>
           </div>
@@ -291,40 +289,33 @@ onMounted(loadComic)
 
 <style scoped>
 .comic-view {
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 
-/* 背景 */
-.bg {
+/* 背景光环 */
+.aura {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #FFF5EB 0%, #FFF0E0 50%, #FFE8CC 100%);
-}
-
-.bg-circle {
-  position: absolute;
   border-radius: 50%;
-  opacity: 0.3;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.bg-circle-1 {
-  width: 500px;
-  height: 500px;
-  top: -150px;
-  right: -100px;
-  background: radial-gradient(circle, rgba(255, 105, 0, 0.3) 0%, transparent 70%);
+.aura-1 {
+  width: 520px;
+  height: 520px;
+  top: -160px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(216, 180, 254, 0.42) 0%, transparent 70%);
 }
 
-.bg-circle-2 {
-  width: 400px;
-  height: 400px;
-  bottom: -100px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(255, 150, 50, 0.25) 0%, transparent 70%);
+.aura-2 {
+  width: 460px;
+  height: 460px;
+  bottom: -140px;
+  left: -120px;
+  background: radial-gradient(circle, rgba(240, 171, 252, 0.30) 0%, transparent 70%);
 }
 
 /* 顶部导航 */
@@ -332,11 +323,11 @@ onMounted(loadComic)
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
+  padding: 14px 24px;
+  background: rgba(247, 243, 255, 0.6);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--divider);
 }
 
 .header-content {
@@ -350,16 +341,18 @@ onMounted(loadComic)
 .back-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: var(--card);
-  border: none;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 999px;
   font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .back-btn:hover {
@@ -380,37 +373,42 @@ onMounted(loadComic)
 
 .header-right {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .nav-btn {
-  padding: 8px 16px;
-  background: var(--card);
-  border-radius: 20px;
+  padding: 10px 20px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 999px;
   font-size: 13px;
   color: var(--text-secondary);
   text-decoration: none;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .nav-btn:hover {
   color: var(--primary);
+  border-color: rgba(139, 92, 246, 0.25);
 }
 
 /* Toast */
 .toast {
   position: fixed;
-  top: 72px;
+  top: 84px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 12px 24px;
-  background: #333;
-  color: white;
-  border-radius: 24px;
+  padding: 14px 28px;
+  background: var(--card-solid);
+  color: var(--text-primary);
+  border-radius: 999px;
   font-size: 14px;
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-hover);
+  border: 1px solid var(--card-brd);
 }
 
 .toast-enter-active,
@@ -430,30 +428,33 @@ onMounted(loadComic)
   z-index: 1;
   max-width: 960px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 32px 24px 72px;
 }
 
 /* 状态卡片 */
 .state-card {
-  background: var(--card);
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
   border-radius: var(--radius);
-  padding: 80px 20px;
+  padding: 96px 20px;
   text-align: center;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
 }
 
 .state-card.error {
-  color: #D32F2F;
+  color: #C26D7A;
 }
 
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--divider);
+  border: 2px solid var(--divider);
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
+  margin: 0 auto 20px;
 }
 
 @keyframes spin {
@@ -462,38 +463,37 @@ onMounted(loadComic)
 
 .btn {
   margin-top: 20px;
-  padding: 10px 24px;
-  background: var(--primary);
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--primary), #A78BFA);
   color: white;
   border: none;
-  border-radius: 20px;
+  border-radius: 999px;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.28);
 }
 
 .btn:hover {
-  background: var(--primary-hover);
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
 /* 漫画信息卡片 */
 .info-card {
   display: flex;
-  gap: 24px;
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow);
-  margin-bottom: 16px;
+  gap: 32px;
+  padding: 32px;
+  margin-bottom: 20px;
 }
 
 .comic-cover {
-  width: 160px;
-  height: 213px;
+  width: 168px;
+  height: 224px;
   flex-shrink: 0;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .comic-cover img {
@@ -508,24 +508,25 @@ onMounted(loadComic)
 }
 
 .comic-name {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   line-height: 1.3;
+  letter-spacing: -0.3px;
 }
 
 .comic-meta {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin-bottom: 20px;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .meta-label {
@@ -542,31 +543,29 @@ onMounted(loadComic)
 .comic-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .tag {
-  padding: 5px 14px;
-  background: var(--primary-light);
-  border-radius: 16px;
+  padding: 7px 18px;
+  background: var(--primary-soft);
+  border: 1px solid var(--divider);
+  border-radius: 999px;
   font-size: 12px;
   color: var(--primary);
 }
 
 /* 区块卡片 */
 .section-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 20px;
-  box-shadow: var(--shadow);
-  margin-bottom: 16px;
+  padding: 28px 32px;
+  margin-bottom: 20px;
 }
 
 .section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
 }
 
 .section-title {
@@ -578,93 +577,117 @@ onMounted(loadComic)
 .chapter-count {
   font-size: 13px;
   color: var(--text-hint);
-  background: var(--bg);
-  padding: 4px 12px;
-  border-radius: 12px;
+  background: var(--primary-soft);
+  padding: 5px 14px;
+  border-radius: 999px;
 }
-
-/* 图片格式选择 */
-.format-group {
-  display: flex; gap: 2px; background: var(--bg); border-radius: 6px; padding: 2px; margin-left: auto; border: 1px solid var(--divider);
-}
-.format-radio {
-  padding: 4px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; color: var(--text-hint); transition: all .2s;
-}
-.format-radio input { display: none; }
-.format-radio.active { background: var(--primary); color: #fff; }
-.format-radio:hover:not(.active) { color: var(--text-primary); }
 
 .brief-text {
   font-size: 14px;
   color: var(--text-secondary);
-  line-height: 1.8;
+  line-height: 1.9;
 }
+
+/* 图片格式选择 */
+.format-group {
+  display: flex;
+  gap: 2px;
+  background: var(--glass-hi);
+  border: 1px solid var(--divider);
+  border-radius: 999px;
+  padding: 3px;
+  margin-left: auto;
+}
+
+.format-radio {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--text-hint);
+  transition: all 0.2s;
+}
+
+.format-radio input { display: none; }
+.format-radio.active { background: linear-gradient(135deg, var(--primary), #A78BFA); color: #fff; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25); }
+.format-radio:hover:not(.active) { color: var(--text-primary); }
 
 /* 工具栏 */
 .toolbar {
   display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--divider);
 }
 
 .tool-btn {
-  padding: 8px 18px;
-  background: var(--bg);
-  border: none;
-  border-radius: 20px;
+  padding: 10px 24px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 999px;
   font-size: 13px;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .tool-btn:hover {
   color: var(--primary);
-  background: var(--primary-light);
+  background: #fff;
+  border-color: rgba(139, 92, 246, 0.25);
 }
 
 .tool-btn.primary {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary), #A78BFA);
   color: white;
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.28);
 }
 
 .tool-btn.primary:hover:not(:disabled) {
-  background: var(--primary-hover);
+  opacity: 0.92;
+  color: white;
 }
 
 .tool-btn.primary:disabled {
-  background: var(--divider);
-  color: var(--text-hint);
+  opacity: 0.4;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* 章节网格 */
 .chapter-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .chapter-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: var(--bg);
-  border-radius: var(--radius-sm);
+  gap: 10px;
+  padding: 14px 18px;
+  background: var(--glass-hi);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-xs);
   cursor: pointer;
   transition: all 0.2s;
+  -webkit-backdrop-filter: blur(12px) saturate(1.3);
+  backdrop-filter: blur(12px) saturate(1.3);
 }
 
 .chapter-item:hover {
-  background: var(--primary-light);
+  background: #fff;
+  border-color: rgba(139, 92, 246, 0.22);
 }
 
 .chapter-item.selected {
-  background: var(--primary-light);
-  box-shadow: inset 0 0 0 2px var(--primary);
+  background: var(--primary-soft);
+  border-color: rgba(139, 92, 246, 0.35);
 }
 
 .chapter-check {
@@ -710,10 +733,10 @@ onMounted(loadComic)
 .pdf-btn {
   flex-shrink: 0;
   margin-left: 4px;
-  padding: 3px 10px;
-  background: var(--primary-light);
-  border: none;
-  border-radius: 12px;
+  padding: 5px 14px;
+  background: var(--primary-soft);
+  border: 1px solid var(--divider);
+  border-radius: 999px;
   font-size: 11px;
   color: var(--primary);
   cursor: pointer;
@@ -723,47 +746,49 @@ onMounted(loadComic)
 .pdf-btn:hover:not(:disabled) {
   background: var(--primary);
   color: white;
+  border-color: transparent;
 }
 
 .pdf-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* 移动端适配 */
 @media (max-width: 640px) {
   .header {
-    padding: 10px 16px;
+    padding: 12px 16px;
   }
 
   .back-btn {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 13px;
   }
 
   .nav-btn {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 12px;
   }
 
   .main {
-    padding: 16px;
+    padding: 20px 16px 56px;
   }
 
   .info-card {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 20px;
+    padding: 24px;
+    gap: 20px;
   }
 
   .comic-cover {
-    width: 120px;
-    height: 160px;
+    width: 132px;
+    height: 176px;
   }
 
   .comic-name {
-    font-size: 20px;
+    font-size: 21px;
   }
 
   .comic-meta {
@@ -775,7 +800,7 @@ onMounted(loadComic)
   }
 
   .section-card {
-    padding: 16px;
+    padding: 20px;
   }
 
   .chapter-grid {

@@ -53,22 +53,20 @@ function goBack() {
 
 <template>
   <div class="tasks-view">
-    <!-- 背景 -->
-    <div class="bg">
-      <div class="bg-circle bg-circle-1"></div>
-      <div class="bg-circle bg-circle-2"></div>
-    </div>
+    <!-- 弥散粉紫背景光环 -->
+    <div class="aura aura-1"></div>
+    <div class="aura aura-2"></div>
 
     <!-- 顶部导航 -->
     <header class="header">
       <div class="header-content">
         <button class="back-btn" @click="goBack">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
           <span>返回</span>
         </button>
-        <div class="header-title">⬇️ 下载任务</div>
+        <div class="header-title">下载任务</div>
         <div class="header-right">
           <router-link to="/" class="nav-btn">首页</router-link>
         </div>
@@ -91,7 +89,10 @@ function goBack() {
 
       <!-- 空状态 -->
       <div v-else-if="tasks.length === 0" class="state-card">
-        <div class="empty-icon">📭</div>
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 7v5l3 3"/>
+        </svg>
         <h3>暂无下载任务</h3>
         <p>去漫画详情页勾选章节即可下载</p>
         <button class="btn" @click="goBack">去搜索</button>
@@ -101,14 +102,14 @@ function goBack() {
       <template v-else>
         <div class="list-info">
           <span>共 {{ tasks.length }} 个任务</span>
-          <span v-if="hasActive(tasks)" class="live-badge">● 实时刷新</span>
+          <span v-if="hasActive(tasks)" class="live-badge">实时刷新</span>
         </div>
 
         <div class="task-list">
           <div
             v-for="task in tasks"
             :key="task.id"
-            class="task-card"
+            class="task-card glass"
             :class="task.status"
           >
             <div class="task-main">
@@ -155,40 +156,33 @@ function goBack() {
 
 <style scoped>
 .tasks-view {
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 
-/* 背景 */
-.bg {
+/* 背景光环 */
+.aura {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #FFF5EB 0%, #FFF0E0 50%, #FFE8CC 100%);
-}
-
-.bg-circle {
-  position: absolute;
   border-radius: 50%;
-  opacity: 0.3;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.bg-circle-1 {
-  width: 500px;
-  height: 500px;
-  top: -150px;
-  right: -100px;
-  background: radial-gradient(circle, rgba(255, 105, 0, 0.3) 0%, transparent 70%);
+.aura-1 {
+  width: 520px;
+  height: 520px;
+  top: -160px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(216, 180, 254, 0.42) 0%, transparent 70%);
 }
 
-.bg-circle-2 {
-  width: 400px;
-  height: 400px;
-  bottom: -100px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(255, 150, 50, 0.25) 0%, transparent 70%);
+.aura-2 {
+  width: 460px;
+  height: 460px;
+  bottom: -140px;
+  left: -120px;
+  background: radial-gradient(circle, rgba(240, 171, 252, 0.30) 0%, transparent 70%);
 }
 
 /* 顶部导航 */
@@ -196,11 +190,11 @@ function goBack() {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
+  padding: 14px 24px;
+  background: rgba(247, 243, 255, 0.6);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--divider);
 }
 
 .header-content {
@@ -214,16 +208,18 @@ function goBack() {
 .back-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: var(--card);
-  border: none;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 999px;
   font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .back-btn:hover {
@@ -244,22 +240,26 @@ function goBack() {
 
 .header-right {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .nav-btn {
-  padding: 8px 16px;
-  background: var(--card);
-  border-radius: 20px;
+  padding: 10px 20px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 999px;
   font-size: 13px;
   color: var(--text-secondary);
   text-decoration: none;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .nav-btn:hover {
   color: var(--primary);
+  border-color: rgba(139, 92, 246, 0.25);
 }
 
 /* 主内容 */
@@ -268,30 +268,33 @@ function goBack() {
   z-index: 1;
   max-width: 960px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 32px 24px 72px;
 }
 
 /* 状态卡片 */
 .state-card {
-  background: var(--card);
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
   border-radius: var(--radius);
-  padding: 80px 20px;
+  padding: 96px 20px;
   text-align: center;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
 }
 
 .state-card.error {
-  color: #D32F2F;
+  color: #C26D7A;
 }
 
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--divider);
+  border: 2px solid var(--divider);
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
+  margin: 0 auto 20px;
 }
 
 @keyframes spin {
@@ -299,7 +302,9 @@ function goBack() {
 }
 
 .empty-icon {
-  font-size: 56px;
+  width: 52px;
+  height: 52px;
+  color: var(--text-hint);
   margin-bottom: 20px;
 }
 
@@ -320,19 +325,19 @@ function goBack() {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 28px;
-  background: var(--primary);
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--primary), #A78BFA);
   color: white;
   border: none;
-  border-radius: 24px;
-  font-size: 15px;
+  border-radius: 999px;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(255, 105, 0, 0.3);
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.28);
 }
 
 .btn:hover {
-  background: var(--primary-hover);
+  opacity: 0.92;
   transform: translateY(-2px);
 }
 
@@ -341,7 +346,7 @@ function goBack() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   padding: 0 4px;
 }
 
@@ -353,32 +358,33 @@ function goBack() {
 .live-badge {
   font-size: 12px;
   color: var(--primary);
-  background: var(--primary-light);
-  padding: 4px 12px;
-  border-radius: 12px;
-  animation: pulse 1.6s ease-in-out infinite;
+  background: var(--primary-soft);
+  padding: 5px 14px;
+  border-radius: 999px;
+  animation: pulse 1.8s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.55; }
 }
 
 /* 任务列表 */
 .task-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .task-card {
   position: relative;
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  box-shadow: var(--shadow);
+  padding: 20px 28px;
   transition: all 0.3s ease;
-  border-left: 4px solid var(--divider);
+  border-left: 3px solid var(--divider);
+}
+
+.task-card:hover {
+  box-shadow: var(--shadow-hover), var(--shadow-inset);
 }
 
 .task-card.downloading {
@@ -386,28 +392,28 @@ function goBack() {
 }
 
 .task-card.completed {
-  border-left-color: #34A853;
+  border-left-color: #7CC38F;
 }
 
 .task-card.failed {
-  border-left-color: #D32F2F;
+  border-left-color: #D29AA3;
 }
 
 .task-card.pending {
-  border-left-color: #F9A825;
+  border-left-color: #D6BCF5;
 }
 
 .task-main {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
+  gap: 16px;
 }
 
 .task-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -420,16 +426,16 @@ function goBack() {
 .task-group {
   font-size: 12px;
   color: var(--text-hint);
-  background: var(--bg);
-  padding: 2px 10px;
-  border-radius: 10px;
+  background: var(--primary-soft);
+  padding: 3px 12px;
+  border-radius: 999px;
 }
 
 .task-chapter {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .order {
@@ -449,9 +455,9 @@ function goBack() {
 .format-badge {
   font-size: 11px;
   color: var(--primary);
-  background: var(--primary-light);
-  padding: 2px 8px;
-  border-radius: 10px;
+  background: var(--primary-soft);
+  padding: 3px 10px;
+  border-radius: 999px;
   flex-shrink: 0;
 }
 
@@ -459,21 +465,21 @@ function goBack() {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .status-badge {
   font-size: 12px;
-  padding: 3px 12px;
-  border-radius: 12px;
+  padding: 4px 14px;
+  border-radius: 999px;
   font-weight: 500;
 }
 
-.status-badge.pending { background: #FFF8E1; color: #F9A825; }
-.status-badge.downloading { background: var(--primary-light); color: var(--primary); }
-.status-badge.completed { background: #E6F4EA; color: #34A853; }
-.status-badge.failed { background: #FDECEA; color: #D32F2F; }
+.status-badge.pending { background: #F3EDFD; color: #9A6DE0; }
+.status-badge.downloading { background: var(--primary-soft); color: var(--primary); }
+.status-badge.completed { background: #EAF6EE; color: #4C9E63; }
+.status-badge.failed { background: #FBEFF1; color: #C26D7A; }
 
 .task-time {
   font-size: 11px;
@@ -482,18 +488,18 @@ function goBack() {
 
 /* 进度条 */
 .task-progress {
-  margin-top: 12px;
+  margin-top: 16px;
   position: relative;
-  height: 8px;
-  background: var(--bg);
-  border-radius: 4px;
+  height: 6px;
+  background: var(--glass-hi);
+  border-radius: 999px;
   overflow: visible;
 }
 
 .progress-bar {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
-  border-radius: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 999px;
   transition: width 0.4s ease;
   min-width: 2px;
 }
@@ -508,40 +514,44 @@ function goBack() {
 
 /* 失败原因 */
 .task-error {
-  margin-top: 12px;
+  margin-top: 16px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 12px;
-  color: #D32F2F;
-  background: #FDECEA;
-  padding: 8px 12px;
-  border-radius: 8px;
+  color: #C26D7A;
+  background: #FBEFF1;
+  padding: 10px 16px;
+  border-radius: 12px;
   word-break: break-all;
+}
+
+.task-error svg {
+  flex-shrink: 0;
 }
 
 /* 移动端适配 */
 @media (max-width: 640px) {
   .header {
-    padding: 10px 16px;
+    padding: 12px 16px;
   }
 
   .back-btn {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 13px;
   }
 
   .nav-btn {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 12px;
   }
 
   .main {
-    padding: 16px;
+    padding: 20px 16px 56px;
   }
 
   .task-card {
-    padding: 14px 16px;
+    padding: 16px 18px;
   }
 
   .task-side {

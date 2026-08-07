@@ -79,24 +79,22 @@ onActivated(() => {
 
 <template>
   <div class="search-view">
-    <!-- 背景 -->
-    <div class="bg">
-      <div class="bg-circle bg-circle-1"></div>
-      <div class="bg-circle bg-circle-2"></div>
-    </div>
+    <!-- 弥散粉紫背景光环 -->
+    <div class="aura aura-1"></div>
+    <div class="aura aura-2"></div>
 
     <!-- 顶部搜索栏 -->
     <header class="header">
       <div class="header-content">
         <button class="back-btn" @click="goBack">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
         </button>
 
-        <div class="search-card">
+        <div class="search-card glass">
           <form class="search-form" @submit.prevent="handleSubmit">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <circle cx="11" cy="11" r="8"/>
               <path d="m21 21-4.35-4.35"/>
             </svg>
@@ -108,17 +106,17 @@ onActivated(() => {
             />
             <button v-if="keyword" type="button" class="clear-btn" @click="keyword = ''">
               <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                <path d="M18.3 5.71 12 12l6.3 6.29a1 1 0 1 1-1.42 1.42L10.6 13.4l-6.3 6.3a1 1 0 0 1-1.42-1.42L9.17 12 2.88 5.71A1 1 0 0 1 4.3 4.3L10.6 10.6l6.29-6.3a1 1 0 1 1 1.42 1.42z"/>
               </svg>
             </button>
           </form>
         </div>
 
-        <router-link to="/downloaded" class="download-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7,10 12,15 17,10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
+        <router-link to="/downloaded" class="icon-btn" title="已下载">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <path d="M3 9h18"/>
+            <path d="M9 21V9"/>
           </svg>
         </router-link>
       </div>
@@ -140,9 +138,13 @@ onActivated(() => {
 
       <!-- 空状态 -->
       <div v-else-if="comics.length === 0 && keyword" class="state-card">
-        <div class="empty-icon">🔍</div>
-        <p>没有找到相关漫画</p>
-        <span>换个关键词试试</span>
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+          <path d="M8 11h6M11 8v6"/>
+        </svg>
+        <h3>没有找到相关漫画</h3>
+        <p>换个关键词试试</p>
       </div>
 
       <!-- 搜索结果 -->
@@ -166,12 +168,11 @@ onActivated(() => {
                 loading="lazy"
                 @error="($event.target as HTMLImageElement).style.display='none'"
               />
-              <div class="cover-placeholder">📚</div>
             </div>
             <div class="comic-info">
               <h3 class="comic-name">{{ comic.name }}</h3>
               <p class="comic-author">{{ comic.author.map(a => a.name).join(', ') }}</p>
-              <p class="comic-popular">🔥 {{ comic.popular }}</p>
+              <p class="comic-popular">{{ comic.popular }} 热度</p>
             </div>
           </router-link>
         </div>
@@ -213,40 +214,33 @@ onActivated(() => {
 
 <style scoped>
 .search-view {
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 
-/* 背景 */
-.bg {
+/* 背景光环 */
+.aura {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #FFF5EB 0%, #FFF0E0 50%, #FFE8CC 100%);
-}
-
-.bg-circle {
-  position: absolute;
   border-radius: 50%;
-  opacity: 0.3;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.bg-circle-1 {
-  width: 500px;
-  height: 500px;
-  top: -150px;
-  right: -100px;
-  background: radial-gradient(circle, rgba(255, 105, 0, 0.3) 0%, transparent 70%);
+.aura-1 {
+  width: 520px;
+  height: 520px;
+  top: -160px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(216, 180, 254, 0.42) 0%, transparent 70%);
 }
 
-.bg-circle-2 {
-  width: 400px;
-  height: 400px;
-  bottom: -100px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(255, 150, 50, 0.25) 0%, transparent 70%);
+.aura-2 {
+  width: 460px;
+  height: 460px;
+  bottom: -140px;
+  left: -120px;
+  background: radial-gradient(circle, rgba(240, 171, 252, 0.30) 0%, transparent 70%);
 }
 
 /* 顶部搜索栏 */
@@ -254,11 +248,11 @@ onActivated(() => {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 16px 20px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
+  padding: 20px 32px;
+  background: rgba(247, 243, 255, 0.6);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--divider);
 }
 
 .header-content {
@@ -266,57 +260,57 @@ onActivated(() => {
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
-.back-btn {
+.back-btn,
+.icon-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: none;
-  background: var(--card);
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--card-brd);
+  background: var(--glass-hi);
   border-radius: 50%;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--text-secondary);
+  text-decoration: none;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
   flex-shrink: 0;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
-.back-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.back-btn:hover,
+.icon-btn:hover {
+  color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
 }
 
-.back-btn svg {
+.back-btn svg,
+.icon-btn svg {
   width: 20px;
   height: 20px;
 }
 
 .search-card {
   flex: 1;
-  background: var(--card);
   border-radius: 24px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s;
-}
-
-.search-card:focus-within {
-  box-shadow: 0 4px 20px rgba(255, 105, 0, 0.15);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
 }
 
 .search-form {
   display: flex;
   align-items: center;
-  padding: 4px;
+  padding: 4px 6px 4px 18px;
 }
 
 .search-icon {
-  width: 20px;
-  height: 20px;
-  margin-left: 14px;
+  width: 19px;
+  height: 19px;
   color: var(--text-hint);
   flex-shrink: 0;
 }
@@ -339,8 +333,8 @@ onActivated(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -351,39 +345,13 @@ onActivated(() => {
 }
 
 .clear-btn:hover {
-  background: var(--bg);
-  color: var(--text-secondary);
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .clear-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.download-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: var(--card);
-  border-radius: 50%;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  flex-shrink: 0;
-}
-
-.download-btn:hover {
-  color: var(--primary);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.download-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 /* 主内容 */
@@ -392,30 +360,33 @@ onActivated(() => {
   z-index: 1;
   max-width: 960px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px 32px 64px;
 }
 
 /* 状态卡片 */
 .state-card {
-  background: var(--card);
+  background: var(--glass-hi);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--card-brd);
   border-radius: var(--radius);
-  padding: 60px 20px;
+  padding: 96px 20px;
   text-align: center;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
 }
 
 .state-card.error {
-  color: #D32F2F;
+  color: #C26D7A;
 }
 
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--divider);
+  border: 2px solid var(--divider);
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
+  margin: 0 auto 20px;
 }
 
 @keyframes spin {
@@ -423,35 +394,40 @@ onActivated(() => {
 }
 
 .empty-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
+  width: 52px;
+  height: 52px;
+  color: var(--text-hint);
+  margin-bottom: 20px;
 }
 
-.state-card p {
-  font-size: 16px;
+.state-card h3 {
+  font-size: 18px;
+  font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 8px;
 }
 
-.state-card span {
+.state-card p {
   font-size: 14px;
   color: var(--text-hint);
 }
 
 .btn {
-  margin-top: 20px;
-  padding: 10px 24px;
-  background: var(--primary);
+  margin-top: 24px;
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--primary), #A78BFA);
   color: white;
   border: none;
-  border-radius: 20px;
+  border-radius: 999px;
   font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.28);
 }
 
 .btn:hover {
-  background: var(--primary-hover);
+  opacity: 0.92;
+  transform: translateY(-1px);
 }
 
 /* 结果信息 */
@@ -459,7 +435,7 @@ onActivated(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 28px;
   padding: 0 4px;
 }
 
@@ -471,39 +447,43 @@ onActivated(() => {
 .page-badge {
   font-size: 12px;
   color: var(--primary);
-  background: var(--primary-light);
-  padding: 4px 12px;
-  border-radius: 12px;
+  background: var(--primary-soft);
+  padding: 6px 16px;
+  border-radius: 999px;
 }
 
 /* 网格布局 */
 .comic-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
 .comic-card {
-  background: var(--card);
-  border-radius: var(--radius);
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: var(--radius-sm);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   transition: all 0.3s ease;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.3);
 }
 
 .comic-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover), var(--shadow-inset);
+  border-color: rgba(139, 92, 246, 0.22);
 }
 
 .comic-cover {
   position: relative;
   width: 100%;
   padding-top: 133%;
-  background: var(--bg);
+  background: var(--primary-soft);
   overflow: hidden;
 }
 
@@ -514,31 +494,22 @@ onActivated(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.4s ease;
 }
 
 .comic-card:hover .comic-cover img {
-  transform: scale(1.05);
-}
-
-.cover-placeholder {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 36px;
-  opacity: 0.5;
+  transform: scale(1.04);
 }
 
 .comic-info {
-  padding: 12px;
+  padding: 16px 18px 20px;
 }
 
 .comic-name {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -549,7 +520,7 @@ onActivated(() => {
 .comic-author {
   font-size: 12px;
   color: var(--text-hint);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -557,7 +528,8 @@ onActivated(() => {
 
 .comic-popular {
   font-size: 11px;
-  color: var(--primary);
+  color: var(--accent-2);
+  font-weight: 500;
 }
 
 /* 分页 */
@@ -565,20 +537,22 @@ onActivated(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 20px 0;
+  gap: 12px;
+  padding: 24px 0;
 }
 
 .page-btn {
-  padding: 10px 20px;
-  background: var(--card);
-  border: none;
-  border-radius: 20px;
+  padding: 12px 24px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 999px;
   font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .page-btn:hover:not(:disabled) {
@@ -588,27 +562,29 @@ onActivated(() => {
 }
 
 .page-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .page-numbers {
   display: flex;
-  gap: 4px;
+  gap: 6px;
 }
 
 .page-num {
-  min-width: 36px;
-  height: 36px;
-  padding: 0 8px;
-  background: var(--card);
-  border: none;
-  border-radius: 18px;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 50%;
   font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .page-num:hover {
@@ -616,15 +592,16 @@ onActivated(() => {
 }
 
 .page-num.active {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary), #A78BFA);
   color: white;
-  box-shadow: 0 2px 8px rgba(255, 105, 0, 0.3);
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.30);
 }
 
 /* 移动端适配 */
 @media (max-width: 640px) {
   .header {
-    padding: 12px 16px;
+    padding: 14px 16px;
   }
 
   .header-content {
@@ -632,9 +609,13 @@ onActivated(() => {
   }
 
   .back-btn,
-  .download-btn {
-    width: 36px;
-    height: 36px;
+  .icon-btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .search-form {
+    padding: 3px 4px 3px 14px;
   }
 
   .search-form input {
@@ -643,16 +624,16 @@ onActivated(() => {
   }
 
   .main {
-    padding: 16px;
+    padding: 24px 16px 48px;
   }
 
   .comic-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 14px;
   }
 
   .comic-info {
-    padding: 8px 10px;
+    padding: 12px 14px 16px;
   }
 
   .comic-name {
@@ -660,17 +641,17 @@ onActivated(() => {
   }
 
   .pagination {
-    gap: 6px;
+    gap: 8px;
   }
 
   .page-btn {
-    padding: 8px 14px;
+    padding: 10px 16px;
     font-size: 13px;
   }
 
   .page-num {
-    min-width: 32px;
-    height: 32px;
+    min-width: 34px;
+    height: 34px;
     font-size: 13px;
   }
 }
@@ -678,7 +659,7 @@ onActivated(() => {
 @media (max-width: 400px) {
   .comic-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 12px;
   }
 }
 </style>

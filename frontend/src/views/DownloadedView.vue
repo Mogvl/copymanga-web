@@ -46,22 +46,20 @@ function goBack() {
 
 <template>
   <div class="downloaded-view">
-    <!-- 背景 -->
-    <div class="bg">
-      <div class="bg-circle bg-circle-1"></div>
-      <div class="bg-circle bg-circle-2"></div>
-    </div>
+    <!-- 弥散粉紫背景光环 -->
+    <div class="aura aura-1"></div>
+    <div class="aura aura-2"></div>
 
     <!-- 顶部导航 -->
     <header class="header">
       <div class="header-content">
         <button class="back-btn" @click="goBack">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
           <span>返回首页</span>
         </button>
-        <div class="header-title">📥 已下载</div>
+        <div class="header-title">已下载</div>
         <div class="header-right">
           <router-link to="/tasks" class="nav-btn">任务</router-link>
         </div>
@@ -83,16 +81,14 @@ function goBack() {
 
       <!-- 空状态 -->
       <div v-else-if="comics.length === 0" class="state-card">
-        <div class="empty-icon">📭</div>
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <rect x="3" y="3" width="18" height="18" rx="3"/>
+          <path d="M3 9h18"/>
+          <path d="M9 21V9"/>
+        </svg>
         <h3>还没有下载</h3>
         <p>搜索并下载你喜欢的漫画吧</p>
-        <button class="btn" @click="goBack">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-          去搜索
-        </button>
+        <button class="btn" @click="goBack">去搜索</button>
       </div>
 
       <!-- 已下载列表 -->
@@ -103,23 +99,16 @@ function goBack() {
 
         <div class="comic-list">
           <div v-for="comic in comics" :key="comic.name" class="comic-card">
-            <div class="card-icon">📖</div>
+            <svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="4" y="3" width="16" height="18" rx="3"/>
+              <path d="M8 8h8M8 12h8M8 16h4"/>
+            </svg>
             <div class="card-content">
               <h3 class="comic-name">{{ comic.name }}</h3>
               <div class="comic-stats">
-                <span class="stat">
-                  <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
-                    <path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/>
-                  </svg>
-                  {{ comic.chapter_count }} 章
-                </span>
+                <span class="stat">{{ comic.chapter_count }} 章</span>
                 <span class="stat-divider">·</span>
-                <span class="stat">
-                  <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
-                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                  </svg>
-                  {{ comic.total_pages }} 图
-                </span>
+                <span class="stat">{{ comic.total_pages }} 图</span>
               </div>
             </div>
             <button
@@ -127,7 +116,7 @@ function goBack() {
               :disabled="exporting === comic.name"
               @click="exportPdf(comic)"
             >
-              {{ exporting === comic.name ? '导出中...' : '导出整本 PDF' }}
+              {{ exporting === comic.name ? '导出中' : '导出整本 PDF' }}
             </button>
           </div>
         </div>
@@ -138,40 +127,33 @@ function goBack() {
 
 <style scoped>
 .downloaded-view {
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
 }
 
-/* 背景 */
-.bg {
+/* 背景光环 */
+.aura {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #FFF5EB 0%, #FFF0E0 50%, #FFE8CC 100%);
-}
-
-.bg-circle {
-  position: absolute;
   border-radius: 50%;
-  opacity: 0.3;
+  filter: blur(90px);
+  pointer-events: none;
+  z-index: 0;
 }
 
-.bg-circle-1 {
-  width: 500px;
-  height: 500px;
-  top: -150px;
-  right: -100px;
-  background: radial-gradient(circle, rgba(255, 105, 0, 0.3) 0%, transparent 70%);
+.aura-1 {
+  width: 520px;
+  height: 520px;
+  top: -160px;
+  right: -120px;
+  background: radial-gradient(circle, rgba(216, 180, 254, 0.42) 0%, transparent 70%);
 }
 
-.bg-circle-2 {
-  width: 400px;
-  height: 400px;
-  bottom: -100px;
-  left: -100px;
-  background: radial-gradient(circle, rgba(255, 150, 50, 0.25) 0%, transparent 70%);
+.aura-2 {
+  width: 460px;
+  height: 460px;
+  bottom: -140px;
+  left: -120px;
+  background: radial-gradient(circle, rgba(240, 171, 252, 0.30) 0%, transparent 70%);
 }
 
 /* 顶部导航 */
@@ -179,11 +161,11 @@ function goBack() {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(20px);
+  padding: 14px 24px;
+  background: rgba(247, 243, 255, 0.6);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--divider);
 }
 
 .header-content {
@@ -197,16 +179,18 @@ function goBack() {
 .back-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  background: var(--card);
-  border: none;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 999px;
   font-size: 14px;
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .back-btn:hover {
@@ -227,22 +211,26 @@ function goBack() {
 
 .header-right {
   display: flex;
-  gap: 8px;
+  gap: 10px;
 }
 
 .nav-btn {
-  padding: 8px 16px;
-  background: var(--card);
-  border-radius: 20px;
+  padding: 10px 20px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
+  border-radius: 999px;
   font-size: 13px;
   color: var(--text-secondary);
   text-decoration: none;
   transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
 }
 
 .nav-btn:hover {
   color: var(--primary);
+  border-color: rgba(139, 92, 246, 0.25);
 }
 
 /* 主内容 */
@@ -251,30 +239,33 @@ function goBack() {
   z-index: 1;
   max-width: 960px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 32px 24px 72px;
 }
 
 /* 状态卡片 */
 .state-card {
-  background: var(--card);
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
   border-radius: var(--radius);
-  padding: 80px 20px;
+  padding: 96px 20px;
   text-align: center;
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
 }
 
 .state-card.error {
-  color: #D32F2F;
+  color: #C26D7A;
 }
 
 .spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--divider);
+  border: 2px solid var(--divider);
   border-top-color: var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
-  margin: 0 auto 16px;
+  margin: 0 auto 20px;
 }
 
 @keyframes spin {
@@ -282,7 +273,9 @@ function goBack() {
 }
 
 .empty-icon {
-  font-size: 56px;
+  width: 52px;
+  height: 52px;
+  color: var(--text-hint);
   margin-bottom: 20px;
 }
 
@@ -303,26 +296,25 @@ function goBack() {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 28px;
-  background: var(--primary);
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--primary), #A78BFA);
   color: white;
   border: none;
-  border-radius: 24px;
-  font-size: 15px;
+  border-radius: 999px;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(255, 105, 0, 0.3);
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.28);
 }
 
 .btn:hover {
-  background: var(--primary-hover);
+  opacity: 0.92;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 105, 0, 0.4);
 }
 
 /* 列表信息 */
 .list-info {
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   padding: 0 4px;
 }
 
@@ -335,27 +327,33 @@ function goBack() {
 .comic-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .comic-card {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  background: var(--card);
+  gap: 20px;
+  padding: 24px 28px;
+  background: var(--glass-hi);
+  border: 1px solid var(--card-brd);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-sm), var(--shadow-inset);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.4);
   transition: all 0.3s ease;
 }
 
 .comic-card:hover {
-  transform: translateX(6px);
-  box-shadow: var(--shadow-hover);
+  transform: translateX(4px);
+  box-shadow: var(--shadow-hover), var(--shadow-inset);
+  border-color: rgba(139, 92, 246, 0.22);
 }
 
 .card-icon {
-  font-size: 36px;
+  width: 34px;
+  height: 34px;
+  color: var(--primary);
   flex-shrink: 0;
 }
 
@@ -368,24 +366,17 @@ function goBack() {
   font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .comic-stats {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .stat {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.stat svg {
   color: var(--text-hint);
 }
 
@@ -395,10 +386,10 @@ function goBack() {
 
 .pdf-btn {
   flex-shrink: 0;
-  padding: 8px 16px;
-  background: var(--primary-light);
-  border: none;
-  border-radius: 18px;
+  padding: 10px 22px;
+  background: var(--primary-soft);
+  border: 1px solid var(--divider);
+  border-radius: 999px;
   font-size: 13px;
   color: var(--primary);
   cursor: pointer;
@@ -408,34 +399,43 @@ function goBack() {
 .pdf-btn:hover:not(:disabled) {
   background: var(--primary);
   color: white;
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.28);
 }
 
 .pdf-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* 移动端适配 */
 @media (max-width: 640px) {
   .header {
-    padding: 10px 16px;
+    padding: 12px 16px;
   }
 
   .back-btn {
-    padding: 6px 12px;
+    padding: 8px 14px;
     font-size: 13px;
   }
 
+  .nav-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
   .main {
-    padding: 16px;
+    padding: 20px 16px 56px;
   }
 
   .comic-card {
-    padding: 14px 16px;
+    padding: 18px 20px;
+    gap: 14px;
   }
 
   .card-icon {
-    font-size: 28px;
+    width: 28px;
+    height: 28px;
   }
 
   .comic-name {
